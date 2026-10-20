@@ -1,0 +1,12 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="lnp-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="50%" stop-color="#7C3AED" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#lnp-grad)"/>
+  <path d="M18 16C18 14.8954 18.8954 14 20 14H24C25.1046 14 26 14.8954 26 16V36C26 37.1046 26.8954 38 28 38H38C39.1046 38 40 38.8954 40 40V44C40 45.1046 39.1046 46 38 46H20C18.8954 46 18 45.1046 18 44V16Z" fill="#FFFFFF"/>
+  <polygon points="34,20 48,29 34,38" fill="#38BDF8"/>
+  <circle cx="48" cy="18" r="3" fill="#FACC15"/>
+</svg>
