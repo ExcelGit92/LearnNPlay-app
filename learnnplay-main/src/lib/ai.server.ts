@@ -1,7 +1,7 @@
 // Server-only helper for structured AI calls through Google Gemini API.
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export const AI_MODEL = "gemini-1.5-flash";
+export const AI_MODEL = "gemini-1.5-pro";
 
 export class AiError extends Error {
   constructor(
