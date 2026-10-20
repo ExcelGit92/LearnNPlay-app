@@ -16,8 +16,13 @@ function token() {
 
 async function verify(participantId: string, tok: string) {
   const db = await admin();
-  const { data } = await db.from("participant_tokens").select("token").eq("participant_id", participantId).maybeSingle();
-  if (!data || data.token !== tok) throw new Error("Your seat in this session is no longer valid. Please join again.");
+  const { data } = await db
+    .from("participant_tokens")
+    .select("token")
+    .eq("participant_id", participantId)
+    .maybeSingle();
+  if (!data || data.token !== tok)
+    throw new Error("Your seat in this session is no longer valid. Please join again.");
   return db;
 }
 
@@ -50,10 +55,22 @@ export const joinLiveSession = createServerFn({ method: "POST" })
     const teams = (session.teams as Team[]) ?? [];
     if (session.competition_mode !== "individual" && teams.length) {
       const ts = (session.team_settings as TeamSettings) ?? {};
-      if (ts.allowChoice && !session.teams_locked && data.team && teams.some((t) => t.id === data.team)) team = data.team;
+      if (
+        ts.allowChoice &&
+        !session.teams_locked &&
+        data.team &&
+        teams.some((t) => t.id === data.team)
+      )
+        team = data.team;
       else {
-        const { data: others } = await db.from("participants").select("team").eq("session_id", session.id);
-        team = smallestTeam(teams, (others ?? []).map((o) => o.team));
+        const { data: others } = await db
+          .from("participants")
+          .select("team")
+          .eq("session_id", session.id);
+        team = smallestTeam(
+          teams,
+          (others ?? []).map((o) => o.team),
+        );
       }
     }
     const { data: p, error } = await db
@@ -73,11 +90,21 @@ export const joinLiveSession = createServerFn({ method: "POST" })
 /** Public: submit an answer. Scoring happens here so nobody can fake points. */
 export const submitLiveAnswer = createServerFn({ method: "POST" })
   .inputValidator((d) =>
-    z.object({ participantId: z.string().uuid(), token: z.string().min(10), choice: z.number().int().min(0).max(9) }).parse(d),
+    z
+      .object({
+        participantId: z.string().uuid(),
+        token: z.string().min(10),
+        choice: z.number().int().min(0).max(9),
+      })
+      .parse(d),
   )
   .handler(async ({ data }) => {
     const db = await verify(data.participantId, data.token);
-    const { data: p } = await db.from("participants").select("id, session_id, score, streak, best_streak, correct_count, answered_count, total_ms").eq("id", data.participantId).single();
+    const { data: p } = await db
+      .from("participants")
+      .select("id, session_id, score, streak, best_streak, correct_count, answered_count, total_ms")
+      .eq("id", data.participantId)
+      .single();
     if (!p) throw new Error("Participant not found.");
     const { data: s } = await db
       .from("live_sessions")
@@ -85,8 +112,19 @@ export const submitLiveAnswer = createServerFn({ method: "POST" })
       .eq("id", p.session_id)
       .single();
     if (!s || s.status !== "question") throw new Error("Answers are closed for this question.");
-    const { data: quiz } = await db.from("quizzes").select("questions").eq("id", s.quiz_id!).single();
-    const q = ((quiz?.questions ?? []) as Array<{ correct: number; seconds: number; points?: number; difficulty?: string }>)[s.idx];
+    const { data: quiz } = await db
+      .from("quizzes")
+      .select("questions")
+      .eq("id", s.quiz_id!)
+      .single();
+    const q = (
+      (quiz?.questions ?? []) as Array<{
+        correct: number;
+        seconds: number;
+        points?: number;
+        difficulty?: string;
+      }>
+    )[s.idx];
     if (!q) throw new Error("Question not found.");
     const elapsed = (Date.now() - new Date(s.question_started_at ?? Date.now()).getTime()) / 1000;
     if (elapsed > q.seconds + 2) throw new Error("Time's up for this question.");
@@ -99,7 +137,8 @@ export const submitLiveAnswer = createServerFn({ method: "POST" })
     const streak = isCorrect ? p.streak + 1 : 0;
     // Optional bonuses (off by default so existing sessions score exactly as before).
     let bonus = 0;
-    if (isCorrect && g.speedBonus) bonus += Math.round(Math.max(0, Math.min(1000, g.maxSpeedBonus)) * speed);
+    if (isCorrect && g.speedBonus)
+      bonus += Math.round(Math.max(0, Math.min(1000, g.maxSpeedBonus)) * speed);
     if (isCorrect && g.streakBonus && streak >= 3) bonus += Math.min(250, (streak - 2) * 50);
     const points = basePoints + bonus;
     const ms = Math.round(elapsed * 1000);
@@ -131,15 +170,30 @@ export const submitLiveAnswer = createServerFn({ method: "POST" })
 /** Public: change the participant's preferred language (if the trainer allows it). */
 export const setLiveLanguage = createServerFn({ method: "POST" })
   .inputValidator((d) =>
-    z.object({ participantId: z.string().uuid(), token: z.string().min(10), lang: z.string().min(2).max(8) }).parse(d),
+    z
+      .object({
+        participantId: z.string().uuid(),
+        token: z.string().min(10),
+        lang: z.string().min(2).max(8),
+      })
+      .parse(d),
   )
   .handler(async ({ data }) => {
     const db = await verify(data.participantId, data.token);
-    const { data: p } = await db.from("participants").select("session_id").eq("id", data.participantId).single();
-    const { data: s } = await db.from("live_sessions").select("languages, allow_language_change").eq("id", p!.session_id).single();
+    const { data: p } = await db
+      .from("participants")
+      .select("session_id")
+      .eq("id", data.participantId)
+      .single();
+    const { data: s } = await db
+      .from("live_sessions")
+      .select("languages, allow_language_change")
+      .eq("id", p!.session_id)
+      .single();
     const cfg = s!.languages as { mode: string; primary: string; secondary?: string | null };
     const allowed = [cfg.primary, ...(cfg.mode === "dual" && cfg.secondary ? [cfg.secondary] : [])];
-    if (!s!.allow_language_change || !allowed.includes(data.lang)) throw new Error("Language can't be changed now.");
+    if (!s!.allow_language_change || !allowed.includes(data.lang))
+      throw new Error("Language can't be changed now.");
     await db.from("participants").update({ lang: data.lang }).eq("id", data.participantId);
     return { ok: true };
   });
@@ -147,7 +201,13 @@ export const setLiveLanguage = createServerFn({ method: "POST" })
 /** Public: participant's own answer for the current question (survives refresh). */
 export const getMyAnswer = createServerFn({ method: "POST" })
   .inputValidator((d) =>
-    z.object({ participantId: z.string().uuid(), token: z.string().min(10), questionIndex: z.number().int().min(0) }).parse(d),
+    z
+      .object({
+        participantId: z.string().uuid(),
+        token: z.string().min(10),
+        questionIndex: z.number().int().min(0),
+      })
+      .parse(d),
   )
   .handler(async ({ data }) => {
     const db = await verify(data.participantId, data.token);
@@ -163,25 +223,53 @@ export const getMyAnswer = createServerFn({ method: "POST" })
 /** Public: participant switches team (only when the trainer allows choice and teams aren't locked). */
 export const setLiveTeam = createServerFn({ method: "POST" })
   .inputValidator((d) =>
-    z.object({ participantId: z.string().uuid(), token: z.string().min(10), team: z.string().min(1).max(16) }).parse(d),
+    z
+      .object({
+        participantId: z.string().uuid(),
+        token: z.string().min(10),
+        team: z.string().min(1).max(16),
+      })
+      .parse(d),
   )
   .handler(async ({ data }) => {
     const db = await verify(data.participantId, data.token);
-    const { data: p } = await db.from("participants").select("session_id").eq("id", data.participantId).single();
-    const { data: s } = await db.from("live_sessions").select("teams, teams_locked, team_settings, status").eq("id", p!.session_id).single();
+    const { data: p } = await db
+      .from("participants")
+      .select("session_id")
+      .eq("id", data.participantId)
+      .single();
+    const { data: s } = await db
+      .from("live_sessions")
+      .select("teams, teams_locked, team_settings, status")
+      .eq("id", p!.session_id)
+      .single();
     const teams = (s!.teams as Team[]) ?? [];
     const ts = (s!.team_settings as TeamSettings) ?? {};
-    if (!ts.allowChoice || s!.teams_locked || s!.status !== "lobby" || !teams.some((t) => t.id === data.team))
+    if (
+      !ts.allowChoice ||
+      s!.teams_locked ||
+      s!.status !== "lobby" ||
+      !teams.some((t) => t.id === data.team)
+    )
       throw new Error("Teams can't be changed right now.");
     await db.from("participants").update({ team: data.team }).eq("id", data.participantId);
     return { ok: true };
   });
 
-async function hostSession(ctx: { supabase: { rpc: (...a: never[]) => unknown } }, sessionId: string) {
+async function hostSession(
+  ctx: { supabase: { rpc: (...a: never[]) => unknown } },
+  sessionId: string,
+) {
   const db = await admin();
-  const { data: s } = await db.from("live_sessions").select("id, org_id, teams").eq("id", sessionId).single();
+  const { data: s } = await db
+    .from("live_sessions")
+    .select("id, org_id, teams")
+    .eq("id", sessionId)
+    .single();
   if (!s) throw new Error("Session not found.");
-  const { data: ok } = await (ctx.supabase.rpc as unknown as (n: string, a: object) => Promise<{ data: boolean }>)("is_org_member", { _org: s.org_id });
+  const { data: ok } = await (
+    ctx.supabase.rpc as unknown as (n: string, a: object) => Promise<{ data: boolean }>
+  )("is_org_member", { _org: s.org_id });
   if (!ok) throw new Error("Not allowed.");
   return { db, teams: (s.teams as Team[]) ?? [] };
 }
@@ -189,22 +277,39 @@ async function hostSession(ctx: { supabase: { rpc: (...a: never[]) => unknown } 
 /** Trainer: move one participant to a team (or none). */
 export const assignParticipantTeam = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ sessionId: z.string().uuid(), participantId: z.string().uuid(), team: z.string().max(16).nullable() }).parse(d))
+  .inputValidator((d) =>
+    z
+      .object({
+        sessionId: z.string().uuid(),
+        participantId: z.string().uuid(),
+        team: z.string().max(16).nullable(),
+      })
+      .parse(d),
+  )
   .handler(async ({ data, context }) => {
     const { db, teams } = await hostSession(context as never, data.sessionId);
     if (data.team && !teams.some((t) => t.id === data.team)) throw new Error("Unknown team.");
-    await db.from("participants").update({ team: data.team }).eq("id", data.participantId).eq("session_id", data.sessionId);
+    await db
+      .from("participants")
+      .update({ team: data.team })
+      .eq("id", data.participantId)
+      .eq("session_id", data.sessionId);
     return { ok: true };
   });
 
 /** Trainer: shuffle everyone into teams as evenly as possible. Also fills unassigned / removed-team seats when `onlyUnassigned`. */
 export const distributeTeams = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ sessionId: z.string().uuid(), onlyUnassigned: z.boolean().default(false) }).parse(d))
+  .inputValidator((d) =>
+    z.object({ sessionId: z.string().uuid(), onlyUnassigned: z.boolean().default(false) }).parse(d),
+  )
   .handler(async ({ data, context }) => {
     const { db, teams } = await hostSession(context as never, data.sessionId);
     if (!teams.length) throw new Error("Create at least one team first.");
-    const { data: ps } = await db.from("participants").select("id, team").eq("session_id", data.sessionId);
+    const { data: ps } = await db
+      .from("participants")
+      .select("id, team")
+      .eq("session_id", data.sessionId);
     const ids = new Set(teams.map((t) => t.id));
     const all = ps ?? [];
     if (data.onlyUnassigned) {
@@ -217,7 +322,14 @@ export const distributeTeams = createServerFn({ method: "POST" })
       }
     } else {
       const shuffled = [...all].sort(() => Math.random() - 0.5);
-      await Promise.all(shuffled.map((p, i) => db.from("participants").update({ team: teams[i % teams.length]!.id }).eq("id", p.id)));
+      await Promise.all(
+        shuffled.map((p, i) =>
+          db
+            .from("participants")
+            .update({ team: teams[i % teams.length]!.id })
+            .eq("id", p.id),
+        ),
+      );
     }
     return { ok: true };
   });

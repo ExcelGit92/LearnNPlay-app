@@ -18,15 +18,45 @@ const BASE = '"Plus Jakarta Sans", system-ui, sans-serif';
 export const LANGUAGES: Language[] = [
   { code: "en", name: "English", native: "English", dir: "ltr", font: BASE },
   { code: "bn", name: "Bangla", native: "বাংলা", dir: "ltr", font: `"Noto Sans Bengali", ${BASE}` },
-  { code: "hi", name: "Hindi", native: "हिन्दी", dir: "ltr", font: `"Noto Sans Devanagari", ${BASE}` },
-  { code: "ar", name: "Arabic", native: "العربية", dir: "rtl", font: `"Noto Sans Arabic", ${BASE}` },
+  {
+    code: "hi",
+    name: "Hindi",
+    native: "हिन्दी",
+    dir: "ltr",
+    font: `"Noto Sans Devanagari", ${BASE}`,
+  },
+  {
+    code: "ar",
+    name: "Arabic",
+    native: "العربية",
+    dir: "rtl",
+    font: `"Noto Sans Arabic", ${BASE}`,
+  },
   { code: "es", name: "Spanish", native: "Español", dir: "ltr", font: BASE },
   { code: "fr", name: "French", native: "Français", dir: "ltr", font: BASE },
   { code: "de", name: "German", native: "Deutsch", dir: "ltr", font: BASE },
   { code: "pt", name: "Portuguese", native: "Português", dir: "ltr", font: BASE },
-  { code: "zh", name: "Chinese", native: "中文", dir: "ltr", font: `"Noto Sans SC", "PingFang SC", "Microsoft YaHei", ${BASE}` },
-  { code: "ja", name: "Japanese", native: "日本語", dir: "ltr", font: `"Noto Sans JP", "Hiragino Sans", "Yu Gothic", ${BASE}` },
-  { code: "ko", name: "Korean", native: "한국어", dir: "ltr", font: `"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", ${BASE}` },
+  {
+    code: "zh",
+    name: "Chinese",
+    native: "中文",
+    dir: "ltr",
+    font: `"Noto Sans SC", "PingFang SC", "Microsoft YaHei", ${BASE}`,
+  },
+  {
+    code: "ja",
+    name: "Japanese",
+    native: "日本語",
+    dir: "ltr",
+    font: `"Noto Sans JP", "Hiragino Sans", "Yu Gothic", ${BASE}`,
+  },
+  {
+    code: "ko",
+    name: "Korean",
+    native: "한국어",
+    dir: "ltr",
+    font: `"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", ${BASE}`,
+  },
   { code: "it", name: "Italian", native: "Italiano", dir: "ltr", font: BASE },
   { code: "tr", name: "Turkish", native: "Türkçe", dir: "ltr", font: BASE },
   { code: "ru", name: "Russian", native: "Русский", dir: "ltr", font: BASE },
@@ -64,11 +94,7 @@ export const DISPLAY_MODES: Array<{ id: DisplayMode; label: string }> = [
 ];
 
 export type TranslationStatus =
-  | "not_translated"
-  | "ai_translated"
-  | "reviewed"
-  | "approved"
-  | "needs_update";
+  "not_translated" | "ai_translated" | "reviewed" | "approved" | "needs_update";
 
 export const STATUS_LABEL: Record<TranslationStatus, string> = {
   not_translated: "Not translated",

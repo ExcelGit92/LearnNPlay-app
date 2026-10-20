@@ -1,6 +1,12 @@
 import { getLang } from "./i18n";
 
-export type AiVersion = { lang: string; prompt: string; options: string[]; explanation: string | null; hint: string | null };
+export type AiVersion = {
+  lang: string;
+  prompt: string;
+  options: string[];
+  explanation: string | null;
+  hint: string | null;
+};
 export type AiQuestion = {
   id: string | null;
   kind: "mcq" | "truefalse";
@@ -26,16 +32,32 @@ const nullableStr = { type: ["string", "null"] };
 const QUESTION = {
   type: "object",
   additionalProperties: false,
-  required: ["id", "kind", "style", "difficulty", "correct", "seconds", "points", "source_ref", "versions"],
+  required: [
+    "id",
+    "kind",
+    "style",
+    "difficulty",
+    "correct",
+    "seconds",
+    "points",
+    "source_ref",
+    "versions",
+  ],
   properties: {
     id: nullableStr,
     kind: { type: "string", enum: ["mcq", "truefalse"] },
     style: { type: "string", enum: ["knowledge", "scenario", "practical"] },
     difficulty: { type: "string", enum: ["easy", "medium", "hard"] },
-    correct: { type: "integer", description: "0-based index of the correct option, identical for every language version" },
+    correct: {
+      type: "integer",
+      description: "0-based index of the correct option, identical for every language version",
+    },
     seconds: { type: "integer" },
     points: { type: "integer" },
-    source_ref: { ...nullableStr, description: "Slide/page or section the question is grounded in" },
+    source_ref: {
+      ...nullableStr,
+      description: "Slide/page or section the question is grounded in",
+    },
     versions: {
       type: "array",
       description: "One entry per requested language, same meaning, same option order",
@@ -61,9 +83,13 @@ const QUIZ_PROPS = {
   objectives: { type: "array", items: { type: "string" } },
   source_outline: {
     type: "string",
-    description: "Faithful structured outline of the source content: headings, key facts, definitions, numbers, processes, terminology",
+    description:
+      "Faithful structured outline of the source content: headings, key facts, definitions, numbers, processes, terminology",
   },
-  plan: { ...nullableStr, description: "Optional session plan / agenda text when the trainer asks for one" },
+  plan: {
+    ...nullableStr,
+    description: "Optional session plan / agenda text when the trainer asks for one",
+  },
   questions: { type: "array", items: QUESTION },
 };
 
@@ -108,7 +134,10 @@ function glossaryBlock(glossary: Glossary, langs: string[]) {
       .map((g) => {
         const parts = langs
           .filter((l) => l !== "en")
-          .map((l) => `${getLang(l).name}: ${g.translations[l]?.trim() ? g.translations[l] : `keep "${g.term}" unchanged`}`);
+          .map(
+            (l) =>
+              `${getLang(l).name}: ${g.translations[l]?.trim() ? g.translations[l] : `keep "${g.term}" unchanged`}`,
+          );
         return `- "${g.term}" → ${parts.join("; ") || "keep unchanged"}`;
       })
       .join("\n")
@@ -169,7 +198,10 @@ export function assistantPrompt(o: {
   questions: unknown[];
   glossary: Glossary;
 }) {
-  const current = [o.languages.primary, ...(o.languages.mode === "dual" && o.languages.secondary ? [o.languages.secondary] : [])];
+  const current = [
+    o.languages.primary,
+    ...(o.languages.mode === "dual" && o.languages.secondary ? [o.languages.secondary] : []),
+  ];
   return `TRAINER COMMAND: """${o.command}"""
 
 CURRENT QUIZ TITLE: ${o.title}

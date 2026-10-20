@@ -50,9 +50,7 @@ function Dashboard() {
                 <span className="pulse-dot size-2 rounded-full bg-mint" /> Live now
               </div>
               <p className="mt-1 truncate font-display text-xl font-bold">{session.title}</p>
-              <p className="text-sm text-ink-foreground/60">
-                PIN {session.pin}
-              </p>
+              <p className="text-sm text-ink-foreground/60">PIN {session.pin}</p>
             </div>
             <Link
               to="/host"
@@ -66,8 +64,17 @@ function Dashboard() {
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <Stat label="Quizzes" value={String(quizzes.length)} note="in your library" />
           <Stat label="Questions" value={String(totalQuestions)} note="AI-assisted" tone="mint" />
-          <Stat label="Bilingual quizzes" value={String(quizzes.filter((q) => q.languages?.mode === "dual").length)} note="two languages" tone="sun" />
-          <Stat label="Live now" value={session ? "1" : "0"} note={session ? `PIN ${session.pin}` : "no session running"} />
+          <Stat
+            label="Bilingual quizzes"
+            value={String(quizzes.filter((q) => q.languages?.mode === "dual").length)}
+            note="two languages"
+            tone="sun"
+          />
+          <Stat
+            label="Live now"
+            value={session ? "1" : "0"}
+            note={session ? `PIN ${session.pin}` : "no session running"}
+          />
         </div>
 
         <div className="grid gap-4 lg:grid-cols-5">
@@ -80,7 +87,9 @@ function Dashboard() {
             </div>
             <div className="mt-4 divide-y divide-border">
               {quizzes.length === 0 ? (
-                <p className="py-3 text-sm text-muted-foreground">No quizzes yet — upload a deck to create your first one.</p>
+                <p className="py-3 text-sm text-muted-foreground">
+                  No quizzes yet — upload a deck to create your first one.
+                </p>
               ) : null}
               {quizzes.map((quiz) => (
                 <div key={quiz.id} className="flex items-center gap-4 py-3">
@@ -143,8 +152,7 @@ function Stat({
   note: string;
   tone?: "primary" | "mint" | "sun";
 }) {
-  const toneClass =
-    tone === "mint" ? "text-mint" : tone === "sun" ? "text-sun" : "text-primary";
+  const toneClass = tone === "mint" ? "text-mint" : tone === "sun" ? "text-sun" : "text-primary";
   return (
     <Card className="p-5">
       <p className="text-xs text-muted-foreground">{label}</p>

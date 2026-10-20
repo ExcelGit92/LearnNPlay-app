@@ -15,7 +15,12 @@ export function LangText({
 }) {
   const l = getLang(lang);
   return (
-    <Tag lang={l.code} dir={l.dir} className={`${className} [unicode-bidi:plaintext]`} style={{ fontFamily: l.font }}>
+    <Tag
+      lang={l.code}
+      dir={l.dir}
+      className={`${className} [unicode-bidi:plaintext]`}
+      style={{ fontFamily: l.font }}
+    >
       {children}
     </Tag>
   );
@@ -52,7 +57,9 @@ export function LanguageSelect({
 
 export function LangBadge({ lang, className = "" }: { lang: LangCode; className?: string }) {
   return (
-    <span className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${className}`}>
+    <span
+      className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${className}`}
+    >
       {getLang(lang).code}
     </span>
   );

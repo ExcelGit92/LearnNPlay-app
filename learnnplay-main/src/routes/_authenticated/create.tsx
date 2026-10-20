@@ -35,7 +35,11 @@ import type { CompetitionMode } from "@/lib/teams";
 const SESSION_MODES: { id: CompetitionMode; label: string; desc: string }[] = [
   { id: "individual", label: "Individual", desc: "Each participant competes individually." },
   { id: "team", label: "Team", desc: "Participants compete as teams." },
-  { id: "both", label: "Individual + Team", desc: "Participants compete individually and as teams." },
+  {
+    id: "both",
+    label: "Individual + Team",
+    desc: "Participants compete individually and as teams.",
+  },
 ];
 
 export const Route = createFileRoute("/_authenticated/create")({
@@ -44,12 +48,14 @@ export const Route = createFileRoute("/_authenticated/create")({
       { title: "Upload a deck — LearnNPlay" },
       {
         name: "description",
-        content: "Upload a PPT or PDF and turn it into an editable, timed quiz in any two languages.",
+        content:
+          "Upload a PPT or PDF and turn it into an editable, timed quiz in any two languages.",
       },
       { property: "og:title", content: "Upload a deck — LearnNPlay" },
       {
         property: "og:description",
-        content: "Draft synchronized bilingual questions from your training content; edit and go live.",
+        content:
+          "Draft synchronized bilingual questions from your training content; edit and go live.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -81,7 +87,11 @@ function CreatePage() {
   const [hints, setHints] = useState(false);
   const [grounding, setGrounding] = useState<"strict" | "general">("strict");
   const [competitionMode, setCompetitionMode] = useState<CompetitionMode>("individual");
-  const [langs, setLangs] = useState<LanguageConfig>({ mode: "dual", primary: "en", secondary: "bn" });
+  const [langs, setLangs] = useState<LanguageConfig>({
+    mode: "dual",
+    primary: "en",
+    secondary: "bn",
+  });
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [view, setView] = useState<"l1" | "l2" | "both">("both");
   const [displayMode, setDisplayMode] = useState<DisplayMode>("both");
@@ -97,14 +107,18 @@ function CreatePage() {
     setError(null);
     setQuiz(null);
     const lower = file.name.toLowerCase();
-    if (lower.endsWith(".ppt")) return setError("Old .ppt files can't be read. Please save the deck as .pptx or PDF.");
-    if (!lower.endsWith(".pptx") && !lower.endsWith(".pdf")) return setError("Please choose a .pptx or .pdf file.");
+    if (lower.endsWith(".ppt"))
+      return setError("Old .ppt files can't be read. Please save the deck as .pptx or PDF.");
+    if (!lower.endsWith(".pptx") && !lower.endsWith(".pdf"))
+      return setError("Please choose a .pptx or .pdf file.");
     if (file.size > 50 * 1024 * 1024) return setError("That file is over 50 MB.");
     if (!orgId) return setError("Your workspace is still loading — try again in a moment.");
     setFileName(file.name);
     setStatus("reading");
     const path = `${orgId}/${crypto.randomUUID()}-${file.name.replace(/[^\w.\-]+/g, "_")}`;
-    const { error: upErr } = await supabase.storage.from("training-files").upload(path, file, file.type ? { contentType: file.type } : {});
+    const { error: upErr } = await supabase.storage
+      .from("training-files")
+      .upload(path, file, file.type ? { contentType: file.type } : {});
     if (upErr) {
       setStatus("idle");
       return setError(`Upload failed: ${upErr.message}`);
@@ -122,7 +136,11 @@ function CreatePage() {
         data: {
           filePath,
           fileName,
-          languages: { mode: langs.mode, primary: langs.primary, secondary: langs.secondary ?? null },
+          languages: {
+            mode: langs.mode,
+            primary: langs.primary,
+            secondary: langs.secondary ?? null,
+          },
           count,
           difficulty,
           types,
@@ -142,7 +160,13 @@ function CreatePage() {
         languages: langs,
         filePath,
         extractedText: res.extracted,
-        settings: { competitionMode, grounding, topics: res.ai.topics, objectives: res.ai.objectives, plan: res.ai.plan },
+        settings: {
+          competitionMode,
+          grounding,
+          topics: res.ai.topics,
+          objectives: res.ai.objectives,
+          plan: res.ai.plan,
+        },
         questions: fromAiQuestions(res.ai.questions, res.langs),
       });
       setDisplayMode(langs.mode === "dual" ? "both" : "l1");
@@ -178,7 +202,11 @@ function CreatePage() {
     );
   }
 
-  function patchTr(q: Question, lang: LangCode, changes: Partial<NonNullable<Question["translations"]>[string]>) {
+  function patchTr(
+    q: Question,
+    lang: LangCode,
+    changes: Partial<NonNullable<Question["translations"]>[string]>,
+  ) {
     const cur = q.translations?.[lang] ?? {
       prompt: "",
       options: q.options.map(() => ""),
@@ -208,7 +236,9 @@ function CreatePage() {
               {(["single", "dual"] as const).map((m) => (
                 <button
                   key={m}
-                  onClick={() => setLangs({ ...langs, mode: m, secondary: langs.secondary ?? "bn" })}
+                  onClick={() =>
+                    setLangs({ ...langs, mode: m, secondary: langs.secondary ?? "bn" })
+                  }
                   className={`rounded-xl py-2 text-sm font-semibold ${
                     langs.mode === m ? "bg-surface shadow-sm" : "text-muted-foreground"
                   }`}
@@ -273,7 +303,8 @@ function CreatePage() {
             </div>
             {competitionMode !== "individual" ? (
               <p className="mt-3 text-xs text-muted-foreground">
-                Two starter teams are created automatically — you can rename, recolor and rebalance them in the waiting room.
+                Two starter teams are created automatically — you can rename, recolor and rebalance
+                them in the waiting room.
               </p>
             ) : null}
           </Card>
@@ -308,7 +339,11 @@ function CreatePage() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold">{fileName}</p>
                     <p className="text-xs text-muted-foreground">
-                      {status === "reading" ? "Uploading securely…" : status === "generating" ? "AI is reading your content and writing questions…" : "Uploaded — ready to generate"}
+                      {status === "reading"
+                        ? "Uploading securely…"
+                        : status === "generating"
+                          ? "AI is reading your content and writing questions…"
+                          : "Uploaded — ready to generate"}
                     </p>
                   </div>
                   {status === "ready" ? (
@@ -320,7 +355,10 @@ function CreatePage() {
                 <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-border">
                   <div
                     className="h-full rounded-full bg-primary transition-all duration-700"
-                    style={{ width: status === "reading" ? "35%" : status === "generating" ? "75%" : "100%" }}
+                    style={{
+                      width:
+                        status === "reading" ? "35%" : status === "generating" ? "75%" : "100%",
+                    }}
                   />
                 </div>
               </div>
@@ -331,14 +369,24 @@ function CreatePage() {
                 <label className="text-sm font-semibold" htmlFor="count">
                   Questions to generate: {count}
                 </label>
-                <input id="count" type="range" min={3} max={20} value={count}
-                  onChange={(e) => setCount(Number(e.target.value))} className="mt-2 w-full accent-[var(--primary)]" />
+                <input
+                  id="count"
+                  type="range"
+                  min={3}
+                  max={20}
+                  value={count}
+                  onChange={(e) => setCount(Number(e.target.value))}
+                  className="mt-2 w-full accent-[var(--primary)]"
+                />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <label className="text-xs font-semibold text-muted-foreground">
                   Difficulty
-                  <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as typeof difficulty)}
-                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground">
+                  <select
+                    value={difficulty}
+                    onChange={(e) => setDifficulty(e.target.value as typeof difficulty)}
+                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
                     <option value="mixed">Mixed</option>
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
@@ -347,34 +395,91 @@ function CreatePage() {
                 </label>
                 <label className="text-xs font-semibold text-muted-foreground">
                   Source mode
-                  <select value={grounding} onChange={(e) => setGrounding(e.target.value as typeof grounding)}
-                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground">
+                  <select
+                    value={grounding}
+                    onChange={(e) => setGrounding(e.target.value as typeof grounding)}
+                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  >
                     <option value="strict">Uploaded content only</option>
                     <option value="general">Content + general knowledge</option>
                   </select>
                 </label>
                 <label className="text-xs font-semibold text-muted-foreground">
                   Timer (seconds)
-                  <input type="number" min={5} max={300} value={seconds} onChange={(e) => setSeconds(Number(e.target.value))}
-                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground" />
+                  <input
+                    type="number"
+                    min={5}
+                    max={300}
+                    value={seconds}
+                    onChange={(e) => setSeconds(Number(e.target.value))}
+                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  />
                 </label>
                 <label className="text-xs font-semibold text-muted-foreground">
                   Points per question
-                  <input type="number" min={100} max={5000} step={100} value={points} onChange={(e) => setPoints(Number(e.target.value))}
-                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground" />
+                  <input
+                    type="number"
+                    min={100}
+                    max={5000}
+                    step={100}
+                    value={points}
+                    onChange={(e) => setPoints(Number(e.target.value))}
+                    className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  />
                 </label>
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
-                {([["mcq", "Multiple choice"], ["truefalse", "True / False"]] as const).map(([t, label]) => (
+                {(
+                  [
+                    ["mcq", "Multiple choice"],
+                    ["truefalse", "True / False"],
+                  ] as const
+                ).map(([t, label]) => (
                   <label key={t} className="flex items-center gap-2">
-                    <input type="checkbox" className="accent-[var(--primary)]" checked={types.includes(t)}
-                      onChange={(e) => setTypes(e.target.checked ? [...types, t] : types.filter((x) => x !== t).length ? types.filter((x) => x !== t) : types)} />
+                    <input
+                      type="checkbox"
+                      className="accent-[var(--primary)]"
+                      checked={types.includes(t)}
+                      onChange={(e) =>
+                        setTypes(
+                          e.target.checked
+                            ? [...types, t]
+                            : types.filter((x) => x !== t).length
+                              ? types.filter((x) => x !== t)
+                              : types,
+                        )
+                      }
+                    />
                     {label}
                   </label>
                 ))}
-                <label className="flex items-center gap-2"><input type="checkbox" className="accent-[var(--primary)]" checked={scenario} onChange={(e) => setScenario(e.target.checked)} />Scenario / practical</label>
-                <label className="flex items-center gap-2"><input type="checkbox" className="accent-[var(--primary)]" checked={explanations} onChange={(e) => setExplanations(e.target.checked)} />Explanations</label>
-                <label className="flex items-center gap-2"><input type="checkbox" className="accent-[var(--primary)]" checked={hints} onChange={(e) => setHints(e.target.checked)} />Hints</label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="accent-[var(--primary)]"
+                    checked={scenario}
+                    onChange={(e) => setScenario(e.target.checked)}
+                  />
+                  Scenario / practical
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="accent-[var(--primary)]"
+                    checked={explanations}
+                    onChange={(e) => setExplanations(e.target.checked)}
+                  />
+                  Explanations
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="accent-[var(--primary)]"
+                    checked={hints}
+                    onChange={(e) => setHints(e.target.checked)}
+                  />
+                  Hints
+                </label>
               </div>
             </div>
 
@@ -389,9 +494,14 @@ function CreatePage() {
                   ? `Generate ${getLang(langs.primary).name} + ${getLang(langs.secondary).name} quiz`
                   : "Generate quiz"}
             </button>
-            {error ? <p className="mt-3 rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{error}</p> : null}
+            {error ? (
+              <p className="mt-3 rounded-xl bg-destructive/10 p-3 text-sm text-destructive">
+                {error}
+              </p>
+            ) : null}
             <p className="mt-3 text-xs text-muted-foreground">
-              Both language versions share one question, the same options and the same correct answer.
+              Both language versions share one question, the same options and the same correct
+              answer.
             </p>
           </Card>
 
@@ -428,7 +538,9 @@ function CreatePage() {
                         key={v}
                         onClick={() => setView(v)}
                         className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                          view === v ? "bg-ink text-ink-foreground" : "bg-secondary text-muted-foreground"
+                          view === v
+                            ? "bg-ink text-ink-foreground"
+                            : "bg-secondary text-muted-foreground"
                         }`}
                       >
                         {v === "l1" ? getLang(l1).name : v === "l2" ? getLang(l2).name : "Both"}
@@ -443,7 +555,9 @@ function CreatePage() {
               {quiz.settings?.plan ? (
                 <Card>
                   <h3 className="font-display font-bold">Session plan</h3>
-                  <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">{quiz.settings.plan}</p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-muted-foreground">
+                    {quiz.settings.plan}
+                  </p>
                 </Card>
               ) : null}
 
@@ -464,7 +578,11 @@ function CreatePage() {
                         <select
                           aria-label={`Question ${qi + 1} difficulty`}
                           value={q.difficulty ?? "medium"}
-                          onChange={(e) => patch(q.id, { difficulty: e.target.value as "easy" | "medium" | "hard" })}
+                          onChange={(e) =>
+                            patch(q.id, {
+                              difficulty: e.target.value as "easy" | "medium" | "hard",
+                            })
+                          }
                           className="rounded-xl border border-border bg-background px-2 py-2 text-sm"
                         >
                           <option value="easy">Easy</option>
@@ -486,7 +604,9 @@ function CreatePage() {
                     <div className={`mt-3 grid gap-4 ${showL1 && showL2 ? "xl:grid-cols-2" : ""}`}>
                       {showL1 ? (
                         <div className="min-w-0">
-                          <p className="mb-1 text-xs font-bold text-muted-foreground">{getLang(l1).name}</p>
+                          <p className="mb-1 text-xs font-bold text-muted-foreground">
+                            {getLang(l1).name}
+                          </p>
                           <textarea
                             lang={l1}
                             dir={getLang(l1).dir}
@@ -501,7 +621,9 @@ function CreatePage() {
                               <div
                                 key={oi}
                                 className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${
-                                  oi === q.correct ? "border-mint bg-mint/10" : "border-border bg-background"
+                                  oi === q.correct
+                                    ? "border-mint bg-mint/10"
+                                    : "border-border bg-background"
                                 }`}
                               >
                                 <button
@@ -532,13 +654,19 @@ function CreatePage() {
                       {showL2 && l2 ? (
                         <div className="min-w-0">
                           <div className="mb-1 flex items-center justify-between gap-2">
-                            <p className="text-xs font-bold text-muted-foreground">{getLang(l2).name}</p>
+                            <p className="text-xs font-bold text-muted-foreground">
+                              {getLang(l2).name}
+                            </p>
                             <select
                               aria-label="Translation status"
                               value={tr?.status ?? "not_translated"}
-                              onChange={(e) => patchTr(q, l2, { status: e.target.value as TranslationStatus })}
+                              onChange={(e) =>
+                                patchTr(q, l2, { status: e.target.value as TranslationStatus })
+                              }
                               className={`rounded-full px-2 py-1 text-[11px] font-semibold ${
-                                STATUS_TONE[stale ? "needs_update" : (tr?.status ?? "not_translated")]
+                                STATUS_TONE[
+                                  stale ? "needs_update" : (tr?.status ?? "not_translated")
+                                ]
                               }`}
                             >
                               {Object.entries(STATUS_LABEL).map(([k, v]) => (
@@ -551,7 +679,8 @@ function CreatePage() {
                           {stale ? (
                             <div className="mb-2 rounded-xl border border-destructive/30 bg-destructive/5 p-2.5 text-xs">
                               <p className="font-semibold">
-                                The {getLang(l1).name} text changed — this translation may be outdated.
+                                The {getLang(l1).name} text changed — this translation may be
+                                outdated.
                               </p>
                               <div className="mt-2 flex flex-wrap gap-1.5">
                                 <button
@@ -561,9 +690,7 @@ function CreatePage() {
                                   Mark for re-translation
                                 </button>
                                 <button
-                                  onClick={() =>
-                                    document.getElementById(`tr-${q.id}`)?.focus()
-                                  }
+                                  onClick={() => document.getElementById(`tr-${q.id}`)?.focus()}
                                   className="rounded-lg bg-surface px-2 py-1 font-semibold"
                                 >
                                   Edit manually
@@ -598,7 +725,9 @@ function CreatePage() {
                               <div
                                 key={oi}
                                 className={`flex items-center gap-2 rounded-xl border px-3 py-2 ${
-                                  oi === q.correct ? "border-mint bg-mint/10" : "border-border bg-background"
+                                  oi === q.correct
+                                    ? "border-mint bg-mint/10"
+                                    : "border-border bg-background"
                                 }`}
                               >
                                 <span className="w-4 shrink-0 text-xs font-bold text-muted-foreground">
@@ -644,7 +773,9 @@ function CreatePage() {
                       key={m.id}
                       onClick={() => setDisplayMode(m.id)}
                       className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                        displayMode === m.id ? "bg-ink text-ink-foreground" : "bg-secondary text-muted-foreground"
+                        displayMode === m.id
+                          ? "bg-ink text-ink-foreground"
+                          : "bg-secondary text-muted-foreground"
                       }`}
                     >
                       {m.id === "l1"
@@ -707,7 +838,10 @@ function CreatePage() {
                     const saved = await persist();
                     if (!saved || !orgId) return;
                     try {
-                      await startLiveSession(orgId, saved, { displayMode, allowLanguageChange: allowChange });
+                      await startLiveSession(orgId, saved, {
+                        displayMode,
+                        allowLanguageChange: allowChange,
+                      });
                       qc.invalidateQueries({ queryKey: ["active-session"] });
                       navigate({ to: "/host" });
                     } catch (e) {
@@ -753,23 +887,41 @@ function GlossaryCard() {
     <Card>
       <h2 className="font-display text-lg font-bold">Organization glossary</h2>
       <p className="mt-1 text-xs text-muted-foreground">
-        The AI uses these approved terms when generating and translating. Leave the translation empty to keep a
-        brand or scientific name unchanged.
+        The AI uses these approved terms when generating and translating. Leave the translation
+        empty to keep a brand or scientific name unchanged.
       </p>
       <div className="mt-3 grid gap-2">
-        <input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Term, e.g. Paracetamol"
-          className="rounded-xl border border-border bg-background px-3 py-2 text-sm" />
+        <input
+          value={term}
+          onChange={(e) => setTerm(e.target.value)}
+          placeholder="Term, e.g. Paracetamol"
+          className="rounded-xl border border-border bg-background px-3 py-2 text-sm"
+        />
         <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-2">
           <LanguageSelect value={lang} onChange={setLang} exclude="en" />
-          <input lang={lang} dir={getLang(lang).dir} value={value} onChange={(e) => setValue(e.target.value)} placeholder="Approved translation"
-            className="min-w-0 rounded-xl border border-border bg-background px-3 py-2 text-sm" />
+          <input
+            lang={lang}
+            dir={getLang(lang).dir}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Approved translation"
+            className="min-w-0 rounded-xl border border-border bg-background px-3 py-2 text-sm"
+          />
         </div>
-        <button onClick={add} className="rounded-xl bg-ink py-2 text-sm font-semibold text-ink-foreground">Add term</button>
+        <button
+          onClick={add}
+          className="rounded-xl bg-ink py-2 text-sm font-semibold text-ink-foreground"
+        >
+          Add term
+        </button>
       </div>
       {glossary.length ? (
         <ul className="mt-3 space-y-1.5">
           {glossary.map((g) => (
-            <li key={g.id} className="flex items-start justify-between gap-2 rounded-xl bg-background px-3 py-2 text-sm">
+            <li
+              key={g.id}
+              className="flex items-start justify-between gap-2 rounded-xl bg-background px-3 py-2 text-sm"
+            >
               <div className="min-w-0">
                 <p className="font-semibold">{g.term}</p>
                 {Object.entries(g.translations).map(([code, t]) => (
@@ -778,8 +930,15 @@ function GlossaryCard() {
                   </p>
                 ))}
               </div>
-              <button onClick={async () => { await deleteGlossaryEntry(g.id); refresh(); }}
-                className="text-xs text-muted-foreground hover:text-destructive">Remove</button>
+              <button
+                onClick={async () => {
+                  await deleteGlossaryEntry(g.id);
+                  refresh();
+                }}
+                className="text-xs text-muted-foreground hover:text-destructive"
+              >
+                Remove
+              </button>
             </li>
           ))}
         </ul>
@@ -822,7 +981,9 @@ function AssistantCard({ quiz, onChange }: { quiz: Quiz; onChange: (q: Quiz) => 
         },
       });
       const next: LanguageConfig =
-        ai.languages.mode === "dual" && ai.languages.secondary && ai.languages.secondary !== ai.languages.primary
+        ai.languages.mode === "dual" &&
+        ai.languages.secondary &&
+        ai.languages.secondary !== ai.languages.primary
           ? { mode: "dual", primary: ai.languages.primary, secondary: ai.languages.secondary }
           : { mode: "single", primary: ai.languages.primary };
       onChange({
@@ -844,26 +1005,51 @@ function AssistantCard({ quiz, onChange }: { quiz: Quiz; onChange: (q: Quiz) => 
   return (
     <Card>
       <h3 className="font-display font-bold">AI Assistant</h3>
-      <p className="mt-1 text-xs text-muted-foreground">Tell it what to change — it edits this quiz in place. Review before saving.</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        Tell it what to change — it edits this quiz in place. Review before saving.
+      </p>
       <div className="mt-3 flex flex-wrap gap-1.5">
         {SUGGESTIONS.map((s) => (
-          <button key={s} disabled={busy} onClick={() => send(s)}
-            className="rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground disabled:opacity-50">
+          <button
+            key={s}
+            disabled={busy}
+            onClick={() => send(s)}
+            className="rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground disabled:opacity-50"
+          >
             {s}
           </button>
         ))}
       </div>
-      <form onSubmit={(e) => { e.preventDefault(); send(command); }} className="mt-3 flex gap-2">
-        <input value={command} onChange={(e) => setCommand(e.target.value)} disabled={busy}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          send(command);
+        }}
+        className="mt-3 flex gap-2"
+      >
+        <input
+          value={command}
+          onChange={(e) => setCommand(e.target.value)}
+          disabled={busy}
           placeholder='e.g. "Keep pharmaceutical terms in English but translate explanations into Bangla"'
-          className="min-w-0 flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm" />
-        <button disabled={busy || !command.trim()} className="shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-40">
+          className="min-w-0 flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm"
+        />
+        <button
+          disabled={busy || !command.trim()}
+          className="shrink-0 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-40"
+        >
           {busy ? "Working…" : "Apply"}
         </button>
       </form>
-      {busy ? <p className="mt-2 text-xs text-muted-foreground">Updating your quiz — this can take up to a minute.</p> : null}
+      {busy ? (
+        <p className="mt-2 text-xs text-muted-foreground">
+          Updating your quiz — this can take up to a minute.
+        </p>
+      ) : null}
       {reply ? <p className="mt-2 rounded-xl bg-mint/10 p-3 text-sm">{reply}</p> : null}
-      {err ? <p className="mt-2 rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{err}</p> : null}
+      {err ? (
+        <p className="mt-2 rounded-xl bg-destructive/10 p-3 text-sm text-destructive">{err}</p>
+      ) : null}
     </Card>
   );
 }

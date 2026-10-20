@@ -12,7 +12,13 @@ import {
   type Translation,
 } from "./i18n";
 import type { AiQuestion, AiQuiz } from "./quiz-ai.server";
-import { makeTeam, type CompetitionMode, type Gamification, type Team, type TeamSettings } from "./teams";
+import {
+  makeTeam,
+  type CompetitionMode,
+  type Gamification,
+  type Team,
+  type TeamSettings,
+} from "./teams";
 
 /* ---------------------------------- types ---------------------------------- */
 
@@ -116,7 +122,12 @@ export function normalizeQuestion<Q extends PublicQuestion>(q: Q): Q {
   return {
     ...q,
     translations: {
-      bn: { prompt: q.promptBn, options: q.options, status: "ai_translated", sourceHash: hashSource(q.prompt, q.options) },
+      bn: {
+        prompt: q.promptBn,
+        options: q.options,
+        status: "ai_translated",
+        sourceHash: hashSource(q.prompt, q.options),
+      },
     },
   };
 }
@@ -126,8 +137,22 @@ export function localized(
   q: PublicQuestion,
   lang: LangCode,
   base: LangCode,
-): { prompt: string; options: string[]; explanation: string | null; hint: string | null; lang: LangCode; fallback: boolean } {
-  const src = { prompt: q.prompt, options: q.options, explanation: q.explanation ?? null, hint: q.hint ?? null, lang: base, fallback: false };
+): {
+  prompt: string;
+  options: string[];
+  explanation: string | null;
+  hint: string | null;
+  lang: LangCode;
+  fallback: boolean;
+} {
+  const src = {
+    prompt: q.prompt,
+    options: q.options,
+    explanation: q.explanation ?? null,
+    hint: q.hint ?? null,
+    lang: base,
+    fallback: false,
+  };
   if (lang === base) return src;
   const t = normalizeQuestion(q).translations?.[lang];
   if (!t || !t.prompt.trim()) return { ...src, fallback: true };
@@ -148,7 +173,10 @@ export function isStale(q: Question, lang: LangCode): boolean {
 }
 
 /** Which language versions to render for this viewer under the session's display mode. */
-export function visibleLangs(session: Pick<LiveSession, "languages" | "displayMode">, pref?: LangCode): LangCode[] {
+export function visibleLangs(
+  session: Pick<LiveSession, "languages" | "displayMode">,
+  pref?: LangCode,
+): LangCode[] {
   const langs = sessionLangs(session.languages);
   const [l1, l2] = langs;
   switch (session.displayMode ?? "both") {
@@ -168,7 +196,11 @@ export function ranked<P extends { score: number }>(participants: P[]): P[] {
 }
 
 /** Converts an AI quiz (versions per language) into the app's linked-translation model. */
-export function fromAiQuestions(ai: AiQuestion[], langs: LangCode[], previous: Question[] = []): Question[] {
+export function fromAiQuestions(
+  ai: AiQuestion[],
+  langs: LangCode[],
+  previous: Question[] = [],
+): Question[] {
   const base = langs[0]!;
   return ai.map((q) => {
     const v = (code: string) => q.versions.find((x) => x.lang === code) ?? null;
@@ -222,7 +254,13 @@ export function toAiQuestions(questions: Question[], langs: LangCode[]): AiQuest
     source_ref: q.sourceRef ?? null,
     versions: langs.map((code) => {
       const t = localized(q, code, base);
-      return { lang: code, prompt: t.fallback ? "" : t.prompt, options: t.fallback ? [] : t.options, explanation: t.explanation, hint: t.hint };
+      return {
+        lang: code,
+        prompt: t.fallback ? "" : t.prompt,
+        options: t.fallback ? [] : t.options,
+        explanation: t.explanation,
+        hint: t.hint,
+      };
     }),
   }));
 }
@@ -232,7 +270,11 @@ export type { AiQuiz };
 /* ---------------------------------- auth ---------------------------------- */
 
 export function useAuthUser() {
-  const [state, setState] = useState<{ loading: boolean; userId: string | null; email: string | null }>({
+  const [state, setState] = useState<{
+    loading: boolean;
+    userId: string | null;
+    email: string | null;
+  }>({
     loading: true,
     userId: null,
     email: null,
@@ -241,9 +283,15 @@ export function useAuthUser() {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) =>
       setState({ loading: false, userId: s?.user.id ?? null, email: s?.user.email ?? null }),
     );
-    supabase.auth.getSession().then(({ data }) =>
-      setState({ loading: false, userId: data.session?.user.id ?? null, email: data.session?.user.email ?? null }),
-    );
+    supabase.auth
+      .getSession()
+      .then(({ data }) =>
+        setState({
+          loading: false,
+          userId: data.session?.user.id ?? null,
+          email: data.session?.user.email ?? null,
+        }),
+      );
     return () => sub.subscription.unsubscribe();
   }, []);
   return state;
@@ -294,7 +342,10 @@ export function useQuizzes(): { quizzes: Quiz[]; loading: boolean } {
   const { data, isLoading } = useQuery({
     queryKey: ["quizzes"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("quizzes").select("*").order("created_at", { ascending: false });
+      const { data, error } = await supabase
+        .from("quizzes")
+        .select("*")
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return (data as QuizRow[]).map(rowToQuiz);
     },
@@ -316,8 +367,16 @@ export async function saveQuiz(orgId: string, quiz: Quiz): Promise<string> {
   };
   const isUuid = /^[0-9a-f-]{36}$/i.test(quiz.id);
   const q = isUuid
-    ? supabase.from("quizzes").upsert({ id: quiz.id, ...row } as never).select("id").single()
-    : supabase.from("quizzes").insert(row as never).select("id").single();
+    ? supabase
+        .from("quizzes")
+        .upsert({ id: quiz.id, ...row } as never)
+        .select("id")
+        .single()
+    : supabase
+        .from("quizzes")
+        .insert(row as never)
+        .select("id")
+        .single();
   const { data, error } = await q;
   if (error) throw error;
   return (data as { id: string }).id;
@@ -334,7 +393,10 @@ export function useGlossary(): GlossaryEntry[] {
   const { data } = useQuery({
     queryKey: ["glossary"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("glossary_entries").select("id, term, translations").order("term");
+      const { data, error } = await supabase
+        .from("glossary_entries")
+        .select("id, term, translations")
+        .order("term");
       if (error) throw error;
       return (data ?? []) as GlossaryEntry[];
     },
@@ -342,10 +404,18 @@ export function useGlossary(): GlossaryEntry[] {
   return data ?? [];
 }
 
-export async function upsertGlossaryEntry(orgId: string, entry: { id?: string; term: string; translations: Record<string, string> }) {
+export async function upsertGlossaryEntry(
+  orgId: string,
+  entry: { id?: string; term: string; translations: Record<string, string> },
+) {
   const { error } = entry.id
-    ? await supabase.from("glossary_entries").update({ term: entry.term, translations: entry.translations }).eq("id", entry.id)
-    : await supabase.from("glossary_entries").insert({ org_id: orgId, term: entry.term, translations: entry.translations });
+    ? await supabase
+        .from("glossary_entries")
+        .update({ term: entry.term, translations: entry.translations })
+        .eq("id", entry.id)
+    : await supabase
+        .from("glossary_entries")
+        .insert({ org_id: orgId, term: entry.term, translations: entry.translations });
   if (error) throw error;
 }
 
@@ -411,7 +481,11 @@ function publicQuestions(quiz: Quiz): PublicQuestion[] {
 export async function startLiveSession(
   orgId: string,
   quiz: Quiz,
-  opts: { displayMode?: DisplayMode; allowLanguageChange?: boolean; competitionMode?: CompetitionMode } = {},
+  opts: {
+    displayMode?: DisplayMode;
+    allowLanguageChange?: boolean;
+    competitionMode?: CompetitionMode;
+  } = {},
 ): Promise<string> {
   const languages = quiz.languages ?? DEFAULT_LANGS;
   const mode = opts.competitionMode ?? quiz.settings?.competitionMode ?? "individual";
@@ -439,16 +513,27 @@ export async function startLiveSession(
 }
 
 export async function updateLiveSession(id: string, patch: Record<string, unknown>) {
-  const { error } = await supabase.from("live_sessions").update(patch as never).eq("id", id);
+  const { error } = await supabase
+    .from("live_sessions")
+    .update(patch as never)
+    .eq("id", id);
   if (error) throw error;
 }
 
 /** Host: move the session to its next phase. Correct answers are revealed only at reveal time. */
 export async function advanceSession(session: LiveSession, quiz: Quiz) {
   if (session.status === "lobby")
-    return updateLiveSession(session.id, { status: "question", idx: 0, question_started_at: new Date().toISOString(), revealed_correct: null });
+    return updateLiveSession(session.id, {
+      status: "question",
+      idx: 0,
+      question_started_at: new Date().toISOString(),
+      revealed_correct: null,
+    });
   if (session.status === "question")
-    return updateLiveSession(session.id, { status: "reveal", revealed_correct: quiz.questions[session.index]?.correct ?? null });
+    return updateLiveSession(session.id, {
+      status: "reveal",
+      revealed_correct: quiz.questions[session.index]?.correct ?? null,
+    });
   if (session.status === "reveal") {
     const next = session.index + 1;
     if (next >= quiz.questions.length)
@@ -469,7 +554,11 @@ export function useLiveSession(sessionId: string | null, opts: { withResponses?:
     queryKey: ["live", sessionId],
     enabled: !!sessionId,
     queryFn: async () => {
-      const { data, error } = await supabase.from("live_sessions").select("*").eq("id", sessionId!).maybeSingle();
+      const { data, error } = await supabase
+        .from("live_sessions")
+        .select("*")
+        .eq("id", sessionId!)
+        .maybeSingle();
       if (error) throw error;
       return data ? rowToSession(data as SessionRow) : null;
     },
@@ -480,11 +569,17 @@ export function useLiveSession(sessionId: string | null, opts: { withResponses?:
     queryFn: async () => {
       const { data, error } = await supabase
         .from("participants")
-        .select("id, name, avatar, score, lang, joined_at, team, streak, best_streak, correct_count, answered_count, total_ms")
+        .select(
+          "id, name, avatar, score, lang, joined_at, team, streak, best_streak, correct_count, answered_count, total_ms",
+        )
         .eq("session_id", sessionId!)
         .order("joined_at");
       if (error) throw error;
-      return (data ?? []).map((p) => ({ ...p, lang: p.lang ?? undefined, joinedAt: p.joined_at })) as Participant[];
+      return (data ?? []).map((p) => ({
+        ...p,
+        lang: p.lang ?? undefined,
+        joinedAt: p.joined_at,
+      })) as Participant[];
     },
   });
   const responsesQ = useQuery({
@@ -504,15 +599,34 @@ export function useLiveSession(sessionId: string | null, opts: { withResponses?:
     if (!sessionId) return;
     const channel = supabase
       .channel(`live-${sessionId}-${opts.withResponses ? "h" : "p"}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "live_sessions", filter: `id=eq.${sessionId}` }, (payload) => {
-        if (payload.new && "id" in payload.new) qc.setQueryData(["live", sessionId], rowToSession(payload.new as SessionRow));
-      })
-      .on("postgres_changes", { event: "*", schema: "public", table: "participants", filter: `session_id=eq.${sessionId}` }, () =>
-        qc.invalidateQueries({ queryKey: ["live-participants", sessionId] }),
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "live_sessions", filter: `id=eq.${sessionId}` },
+        (payload) => {
+          if (payload.new && "id" in payload.new)
+            qc.setQueryData(["live", sessionId], rowToSession(payload.new as SessionRow));
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "participants",
+          filter: `session_id=eq.${sessionId}`,
+        },
+        () => qc.invalidateQueries({ queryKey: ["live-participants", sessionId] }),
       );
     if (opts.withResponses)
-      channel.on("postgres_changes", { event: "INSERT", schema: "public", table: "responses", filter: `session_id=eq.${sessionId}` }, () =>
-        qc.invalidateQueries({ queryKey: ["live-responses", sessionId] }),
+      channel.on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "responses",
+          filter: `session_id=eq.${sessionId}`,
+        },
+        () => qc.invalidateQueries({ queryKey: ["live-responses", sessionId] }),
       );
     channel.subscribe();
     return () => {
@@ -546,9 +660,15 @@ export function useActiveHostSession() {
   });
 }
 
-export function answerCounts(responses: ResponseRow[], questionIndex: number, optionCount: number): number[] {
+export function answerCounts(
+  responses: ResponseRow[],
+  questionIndex: number,
+  optionCount: number,
+): number[] {
   const counts = Array.from({ length: optionCount }, () => 0);
-  for (const r of responses) if (r.question_index === questionIndex && r.choice < optionCount) counts[r.choice] = (counts[r.choice] ?? 0) + 1;
+  for (const r of responses)
+    if (r.question_index === questionIndex && r.choice < optionCount)
+      counts[r.choice] = (counts[r.choice] ?? 0) + 1;
   return counts;
 }
 

@@ -171,7 +171,9 @@ function Landing() {
             <div className="text-xs font-semibold uppercase tracking-widest text-sun">
               Bilingual by default
             </div>
-            <div className="mt-2 font-display text-2xl font-bold">Every question, two languages.</div>
+            <div className="mt-2 font-display text-2xl font-bold">
+              Every question, two languages.
+            </div>
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <div className="rounded-2xl bg-surface/10 px-5 py-4">
@@ -190,9 +192,7 @@ function Landing() {
 }
 
 function QrMark() {
-  const cells = [
-    1, 1, 0, 1, 1, 1, 0, 2, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1,
-  ];
+  const cells = [1, 1, 0, 1, 1, 1, 0, 2, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1];
   return (
     <div className="grid grid-cols-5 gap-1">
       {cells.map((c, i) => (

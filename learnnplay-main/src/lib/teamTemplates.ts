@@ -51,7 +51,8 @@ export function validateTemplate(name: string, teams: TemplateTeam[]): string | 
     const n = t.name.trim();
     if (!n) return `Team ${i + 1} needs a name.`;
     if (n.length > 24) return `Team ${i + 1}'s name is too long (max 24 characters).`;
-    if (!(TEAM_COLORS as readonly string[]).includes(t.color)) return `Team ${i + 1} has an invalid color.`;
+    if (!(TEAM_COLORS as readonly string[]).includes(t.color))
+      return `Team ${i + 1} has an invalid color.`;
     if (!ICON_KEYS.includes(t.icon)) return `Team ${i + 1} has an invalid icon.`;
     const k = n.toLowerCase();
     if (seen.has(k)) return `Two teams are both called "${n}". Team names must be different.`;
@@ -62,7 +63,12 @@ export function validateTemplate(name: string, teams: TemplateTeam[]): string | 
 
 export async function saveTeamTemplate(
   orgId: string,
-  tpl: { id?: string | undefined; name: string; teams: TemplateTeam[]; settings?: TemplateSettings },
+  tpl: {
+    id?: string | undefined;
+    name: string;
+    teams: TemplateTeam[];
+    settings?: TemplateSettings;
+  },
 ) {
   const err = validateTemplate(tpl.name, tpl.teams);
   if (err) throw new Error(err);
@@ -73,7 +79,10 @@ export async function saveTeamTemplate(
     updated_at: new Date().toISOString(),
   };
   const { error } = tpl.id
-    ? await supabase.from("team_templates").update(row as never).eq("id", tpl.id)
+    ? await supabase
+        .from("team_templates")
+        .update(row as never)
+        .eq("id", tpl.id)
     : await supabase.from("team_templates").insert({ ...row, org_id: orgId } as never);
   if (error) throw error;
 }

@@ -55,8 +55,13 @@ export async function callStructured<T>(opts: {
     } catch {
       /* keep raw */
     }
-    if (res.status === 402) throw new AiError("AI credits are used up for this workspace. Add credits to keep generating.", 402);
-    if (res.status === 429) throw new AiError("The AI is busy right now. Please try again in a minute.", 429);
+    if (res.status === 402)
+      throw new AiError(
+        "AI credits are used up for this workspace. Add credits to keep generating.",
+        402,
+      );
+    if (res.status === 429)
+      throw new AiError("The AI is busy right now. Please try again in a minute.", 429);
     if (res.status === 403) throw new AiError(msg || "AI access was denied for this request.", 403);
     throw new AiError(msg || `AI request failed (${res.status})`, res.status);
   }
@@ -82,17 +87,29 @@ export async function callStructured<T>(opts: {
         .map((l) => l.slice(5).trim())
         .join("");
       if (!data || data === "[DONE]") continue;
-      let evt: { type?: string; delta?: string; text?: string; refusal?: string; response?: { error?: { message?: string } }; message?: string };
+      let evt: {
+        type?: string;
+        delta?: string;
+        text?: string;
+        refusal?: string;
+        response?: { error?: { message?: string } };
+        message?: string;
+      };
       try {
         evt = JSON.parse(data);
       } catch {
         continue;
       }
       if (evt.type === "response.output_text.delta" && evt.delta) text += evt.delta;
-      else if (evt.type === "response.output_text.done" && typeof evt.text === "string") finalText = evt.text;
-      else if (evt.type === "response.refusal.done") refusal = evt.refusal ?? "The AI declined this request.";
+      else if (evt.type === "response.output_text.done" && typeof evt.text === "string")
+        finalText = evt.text;
+      else if (evt.type === "response.refusal.done")
+        refusal = evt.refusal ?? "The AI declined this request.";
       else if (evt.type === "response.failed" || evt.type === "error")
-        throw new AiError(evt.response?.error?.message ?? evt.message ?? "AI generation failed.", 502);
+        throw new AiError(
+          evt.response?.error?.message ?? evt.message ?? "AI generation failed.",
+          502,
+        );
     }
   }
 

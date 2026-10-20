@@ -3,7 +3,14 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { joinLiveSession } from "@/lib/live.functions";
-import { AVATARS, getUiLang, rowToSession, setSeat, setUiLang, type LiveSession } from "@/lib/learnplay";
+import {
+  AVATARS,
+  getUiLang,
+  rowToSession,
+  setSeat,
+  setUiLang,
+  type LiveSession,
+} from "@/lib/learnplay";
 import { getLang, sessionLangs } from "@/lib/i18n";
 import { TeamBadge } from "@/components/TeamBadge";
 
@@ -18,9 +25,16 @@ export const Route = createFileRoute("/join")({
   head: () => ({
     meta: [
       { title: "Join a session — LearnNPlay" },
-      { name: "description", content: "Enter the session PIN, pick a name, avatar and language, and play from your phone." },
+      {
+        name: "description",
+        content:
+          "Enter the session PIN, pick a name, avatar and language, and play from your phone.",
+      },
       { property: "og:title", content: "Join a session — LearnNPlay" },
-      { property: "og:description", content: "No app needed — join a live LearnNPlay quiz straight from your browser." },
+      {
+        property: "og:description",
+        content: "No app needed — join a live LearnNPlay quiz straight from your browser.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -71,7 +85,11 @@ function JoinPage() {
       navigate({ to: "/play" });
     } catch (e) {
       console.error("[join] failed", e);
-      setError(e instanceof Error && e.message ? e.message : "Unable to join this session. Please try again.");
+      setError(
+        e instanceof Error && e.message
+          ? e.message
+          : "Unable to join this session. Please try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -82,7 +100,9 @@ function JoinPage() {
   return (
     <div className="flex min-h-screen flex-col bg-ink px-5 py-8 text-ink-foreground">
       <Link to="/" className="flex items-center gap-2.5">
-        <span className="grid size-9 place-items-center rounded-xl bg-primary font-display text-lg font-bold text-primary-foreground">L</span>
+        <span className="grid size-9 place-items-center rounded-xl bg-primary font-display text-lg font-bold text-primary-foreground">
+          L
+        </span>
         <span className="font-display text-lg font-bold">LearnNPlay</span>
       </Link>
 
@@ -92,7 +112,9 @@ function JoinPage() {
           {session ? `${session.title} is live now.` : "Enter the 6-digit PIN your trainer shared."}
         </p>
 
-        <label className="mt-7 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">Session PIN</label>
+        <label className="mt-7 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">
+          Session PIN
+        </label>
         <input
           value={pin}
           onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
@@ -101,7 +123,9 @@ function JoinPage() {
           className="mt-2 w-full rounded-2xl bg-surface/10 px-5 py-5 text-center font-display text-4xl font-bold tracking-[0.3em] outline-none placeholder:text-ink-foreground/25"
         />
 
-        <label className="mt-5 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">Your name</label>
+        <label className="mt-5 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">
+          Your name
+        </label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value.slice(0, 30))}
@@ -109,10 +133,16 @@ function JoinPage() {
           className="mt-2 w-full rounded-2xl bg-surface/10 px-5 py-4 text-lg font-semibold outline-none placeholder:text-ink-foreground/25"
         />
 
-        <label className="mt-5 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">Pick an avatar</label>
+        <label className="mt-5 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">
+          Pick an avatar
+        </label>
         <div className="mt-2 grid grid-cols-6 gap-2">
           {AVATARS.map((a) => (
-            <button key={a} onClick={() => setAvatar(a)} className={`grid aspect-square place-items-center rounded-2xl text-2xl ${a === avatar ? "bg-primary" : "bg-surface/10"}`}>
+            <button
+              key={a}
+              onClick={() => setAvatar(a)}
+              className={`grid aspect-square place-items-center rounded-2xl text-2xl ${a === avatar ? "bg-primary" : "bg-surface/10"}`}
+            >
               {a}
             </button>
           ))}
@@ -120,7 +150,9 @@ function JoinPage() {
 
         {langs.length > 1 ? (
           <>
-            <label className="mt-5 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">Preferred language</label>
+            <label className="mt-5 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">
+              Preferred language
+            </label>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {langs.map((code) => (
                 <button
@@ -137,18 +169,30 @@ function JoinPage() {
           </>
         ) : null}
 
-        {session && session.competitionMode !== "individual" && session.teamSettings.allowChoice && !session.teamsLocked && session.teams.length ? (
+        {session &&
+        session.competitionMode !== "individual" &&
+        session.teamSettings.allowChoice &&
+        !session.teamsLocked &&
+        session.teams.length ? (
           <>
-            <label className="mt-5 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">Choose your team</label>
+            <label className="mt-5 block text-xs font-semibold uppercase tracking-widest text-ink-foreground/50">
+              Choose your team
+            </label>
             <div className="mt-2 grid gap-2">
               {session.teams.map((t, i) => (
-                <button key={t.id} onClick={() => setTeam(t.id)} aria-pressed={team === t.id}
-                  className={`flex items-center rounded-2xl p-2 text-left ${team === t.id ? "ring-4 ring-primary" : "bg-surface/10"}`}>
+                <button
+                  key={t.id}
+                  onClick={() => setTeam(t.id)}
+                  aria-pressed={team === t.id}
+                  className={`flex items-center rounded-2xl p-2 text-left ${team === t.id ? "ring-4 ring-primary" : "bg-surface/10"}`}
+                >
                   <TeamBadge team={t} number={i + 1} />
                 </button>
               ))}
             </div>
-            <p className="mt-1 text-xs text-ink-foreground/50">Skip to be placed on a team automatically.</p>
+            <p className="mt-1 text-xs text-ink-foreground/50">
+              Skip to be placed on a team automatically.
+            </p>
           </>
         ) : null}
 

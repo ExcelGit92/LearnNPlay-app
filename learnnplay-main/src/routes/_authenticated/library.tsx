@@ -3,7 +3,15 @@ import { useState } from "react";
 import { AppShell, Card } from "@/components/AppShell";
 import { LangText } from "@/components/Lang";
 import { useQueryClient } from "@tanstack/react-query";
-import { deleteQuiz, isStale, localized, startLiveSession, useOrgId, useQuizzes, type Quiz } from "@/lib/learnplay";
+import {
+  deleteQuiz,
+  isStale,
+  localized,
+  startLiveSession,
+  useOrgId,
+  useQuizzes,
+  type Quiz,
+} from "@/lib/learnplay";
 import { getLang, LANGUAGES, sessionLangs, STATUS_LABEL, type TranslationStatus } from "@/lib/i18n";
 
 function quizStatuses(quiz: Quiz): Set<TranslationStatus> {
@@ -76,19 +84,39 @@ function LibraryPage() {
       }
     >
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <select aria-label="Language" value={fLang} onChange={(e) => setFLang(e.target.value)} className={sel}>
+        <select
+          aria-label="Language"
+          value={fLang}
+          onChange={(e) => setFLang(e.target.value)}
+          className={sel}
+        >
           <option value="">Any language</option>
           {langOpts}
         </select>
-        <select aria-label="Primary language" value={fPrimary} onChange={(e) => setFPrimary(e.target.value)} className={sel}>
+        <select
+          aria-label="Primary language"
+          value={fPrimary}
+          onChange={(e) => setFPrimary(e.target.value)}
+          className={sel}
+        >
           <option value="">Any primary</option>
           {langOpts}
         </select>
-        <select aria-label="Secondary language" value={fSecondary} onChange={(e) => setFSecondary(e.target.value)} className={sel}>
+        <select
+          aria-label="Secondary language"
+          value={fSecondary}
+          onChange={(e) => setFSecondary(e.target.value)}
+          className={sel}
+        >
           <option value="">Any secondary</option>
           {langOpts}
         </select>
-        <select aria-label="Translation status" value={fStatus} onChange={(e) => setFStatus(e.target.value)} className={sel}>
+        <select
+          aria-label="Translation status"
+          value={fStatus}
+          onChange={(e) => setFStatus(e.target.value)}
+          className={sel}
+        >
           <option value="">Any status</option>
           {Object.entries(STATUS_LABEL).map(([k, v]) => (
             <option key={k} value={k}>
@@ -97,13 +125,22 @@ function LibraryPage() {
           ))}
         </select>
         <label className="flex items-center gap-2 text-sm font-medium">
-          <input type="checkbox" checked={fBilingual} onChange={(e) => setFBilingual(e.target.checked)} className="accent-[var(--primary)]" />
+          <input
+            type="checkbox"
+            checked={fBilingual}
+            onChange={(e) => setFBilingual(e.target.checked)}
+            className="accent-[var(--primary)]"
+          />
           Bilingual only
         </label>
       </div>
       {loading ? <p className="text-sm text-muted-foreground">Loading…</p> : null}
       {!loading && filtered.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{quizzes.length ? "No quizzes match these filters." : "Your library is empty — create a quiz from a deck."}</p>
+        <p className="text-sm text-muted-foreground">
+          {quizzes.length
+            ? "No quizzes match these filters."
+            : "Your library is empty — create a quiz from a deck."}
+        </p>
       ) : null}
       <div className="grid gap-4 md:grid-cols-2">
         {filtered.map((quiz) => (
@@ -113,7 +150,9 @@ function LibraryPage() {
                 <h2 className="truncate font-display text-lg font-bold">{quiz.title}</h2>
                 <p className="truncate text-xs text-muted-foreground">
                   {quiz.questions.length} questions · from {quiz.source} ·{" "}
-                  {sessionLangs(quiz.languages).map((l) => getLang(l).name).join(" + ")}
+                  {sessionLangs(quiz.languages)
+                    .map((l) => getLang(l).name)
+                    .join(" + ")}
                 </p>
               </div>
               <span className="shrink-0 rounded-full bg-secondary px-3 py-1 text-xs font-semibold">
@@ -130,10 +169,22 @@ function LibraryPage() {
                   {sessionLangs(quiz.languages)[1] ? (
                     <LangText
                       as="p"
-                      lang={localized(q, sessionLangs(quiz.languages)[1]!, sessionLangs(quiz.languages)[0]!).lang}
+                      lang={
+                        localized(
+                          q,
+                          sessionLangs(quiz.languages)[1]!,
+                          sessionLangs(quiz.languages)[0]!,
+                        ).lang
+                      }
                       className="text-xs text-muted-foreground"
                     >
-                      {localized(q, sessionLangs(quiz.languages)[1]!, sessionLangs(quiz.languages)[0]!).prompt}
+                      {
+                        localized(
+                          q,
+                          sessionLangs(quiz.languages)[1]!,
+                          sessionLangs(quiz.languages)[0]!,
+                        ).prompt
+                      }
                     </LangText>
                   ) : null}
                   <p className="mt-1 text-xs text-mint">

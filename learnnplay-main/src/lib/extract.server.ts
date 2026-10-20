@@ -35,7 +35,9 @@ export function extractPptx(bytes: Uint8Array): string {
     const n = num(name);
     const body = xmlParagraphs(strFromU8(files[name]!));
     const notesFile = files[`ppt/notesSlides/notesSlide${n}.xml`];
-    const notes = notesFile ? xmlParagraphs(strFromU8(notesFile)).filter((l) => !/^\d+$/.test(l)) : [];
+    const notes = notesFile
+      ? xmlParagraphs(strFromU8(notesFile)).filter((l) => !/^\d+$/.test(l))
+      : [];
     if (!body.length && !notes.length) continue;
     out.push(
       `--- Slide ${n} ---\n${body.join("\n")}${notes.length ? `\n[Speaker notes]\n${notes.join("\n")}` : ""}`,
