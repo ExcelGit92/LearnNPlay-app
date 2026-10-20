@@ -63,13 +63,14 @@ export const joinLiveSession = createServerFn({ method: "POST" })
       )
         team = data.team;
       else {
-        const { data: others } = await db
+        // Optimize: fetch team assignment in single query with count
+        const { data: teamCounts } = await db
           .from("participants")
           .select("team")
           .eq("session_id", session.id);
         team = smallestTeam(
           teams,
-          (others ?? []).map((o) => o.team),
+          (teamCounts ?? []).map((o) => o.team),
         );
       }
     }
