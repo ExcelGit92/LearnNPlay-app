@@ -16,7 +16,7 @@ type ContentPart =
   | { type: "input_text"; text: string }
   | { type: "input_file"; filename: string; file_data: string };
 
-/** Streams a strict-JSON-schema call using Gemini API and returns the parsed object. */
+/** Streams a structured JSON call using Gemini API and returns the parsed object. */
 export async function callStructured<T>(opts: {
   instructions: string;
   content: ContentPart[];
@@ -35,36 +35,53 @@ export async function callStructured<T>(opts: {
     model: AI_MODEL,
     generationConfig: {
       responseMimeType: "application/json",
-      responseSchema: opts.schema,
     },
   });
 
-  // Build the prompt content
-  const promptParts: string[] = [opts.instructions];
+  // Build the prompt with JSON schema instructions
+  const promptParts: string[] = [
+    opts.instructions,
+    "\n\nIMPORTANT: Return your response as valid JSON only. No markdown, no explanation outside the JSON.",
+    "\n\nJSON Schema to follow:",
+    JSON.stringify(opts.schema, null, 2),
+  ];
 
   for (const part of opts.content) {
     if (part.type === "input_text") {
-      promptParts.push(part.text);
+      promptParts.push("\n\nCONTENT:\n" + part.text);
     } else if (part.type === "input_file") {
-      // For file uploads, we'd need to handle differently with Gemini
-      // For now, add as text reference
-      promptParts.push(`[File: ${part.filename}]`);
+      // Include the file data in the prompt
+      promptParts.push(`\n\nUPLOADED FILE: ${part.filename}\n\n${part.file_data}`);
     }
   }
 
-  const fullPrompt = promptParts.join("\n\n");
+  const fullPrompt = promptParts.join("\n");
 
   try {
     const result = await model.generateContent(fullPrompt);
     const response = result.response;
-    const text = response.text();
+    let text = response.text();
 
-    if (!text.trim()) throw new AiError("The AI returned an empty answer. Please try again.", 502);
+    // Clean up the response - remove markdown code blocks if present
+    text = text.trim();
+    if (text.startsWith("```json")) {
+      text = text.slice(7);
+    }
+    if (text.startsWith("```")) {
+      text = text.slice(3);
+    }
+    if (text.endsWith("```")) {
+      text = text.slice(0, -3);
+    }
+    text = text.trim();
+
+    if (!text) throw new AiError("The AI returned an empty answer. Please try again.", 502);
 
     try {
       return JSON.parse(text) as T;
-    } catch {
-      throw new AiError("The AI answer could not be read. Please try again.", 502);
+    } catch (e) {
+      console.error("Failed to parse AI response:", text);
+      throw new AiError("The AI answer could not be read as JSON. Please try again.", 502);
     }
   } catch (error) {
     if (error instanceof AiError) throw error;
@@ -76,6 +93,9 @@ export async function callStructured<T>(opts: {
       }
       if (error.message.includes("429") || error.message.includes("quota")) {
         throw new AiError("The AI is busy right now. Please try again in a minute.", 429);
+      }
+      if (error.message.includes("400")) {
+        throw new AiError("Invalid request format. Please try again.", 400);
       }
       throw new AiError(error.message || "AI request failed.", 502);
     }
