@@ -1,0 +1,163 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * LearnNPlay design system — "Warm Coral" direction.
+ * All colors are oklch tokens. Never hardcode colors in components.
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 16px);
+  --radius-4xl: calc(var(--radius) + 24px);
+
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-bn: "Noto Sans Bengali", "Plus Jakarta Sans", sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-deep: var(--primary-deep);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-mint: var(--mint);
+  --color-sun: var(--sun);
+  --color-surface: var(--surface);
+
+  --shadow-brand: 0 14px 34px -12px color-mix(in oklab, var(--primary) 45%, transparent);
+  --shadow-card: 0 1px 2px color-mix(in oklab, var(--ink) 6%, transparent);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  --background: oklch(0.975 0.01 72.7);
+  --foreground: oklch(0.255 0.027 260);
+  --surface: oklch(1 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.255 0.027 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.255 0.027 260);
+
+  --primary: oklch(0.685 0.206 32.5);
+  --primary-deep: oklch(0.602 0.209 32.3);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.955 0.012 72.7);
+  --secondary-foreground: oklch(0.255 0.027 260);
+
+  --muted: oklch(0.955 0.012 72.7);
+  --muted-foreground: oklch(0.52 0.02 262);
+
+  --accent: oklch(0.813 0.165 75);
+  --accent-foreground: oklch(0.255 0.027 260);
+
+  --ink: oklch(0.255 0.027 260);
+  --ink-foreground: oklch(0.985 0.005 73);
+
+  --mint: oklch(0.695 0.143 164.9);
+  --sun: oklch(0.813 0.165 75);
+
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.92 0.018 73.1);
+  --input: oklch(0.92 0.018 73.1);
+  --ring: oklch(0.685 0.206 32.5);
+  /* Team identity colors — dark enough for white text (WCAG AA). */
+  --team-blue: oklch(0.48 0.17 255);
+  --team-red: oklch(0.5 0.19 25);
+  --team-green: oklch(0.48 0.13 150);
+  --team-orange: oklch(0.55 0.16 50);
+  --team-purple: oklch(0.47 0.18 300);
+  --team-teal: oklch(0.48 0.09 195);
+  --team-yellow: oklch(0.55 0.12 85);
+  --team-pink: oklch(0.52 0.19 350);
+  --team-foreground: oklch(0.99 0 0);
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes grow-bar {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+@utility pulse-dot {
+  animation: pulse-dot 1.6s ease-in-out infinite;
+}
+
+@utility grow-bar {
+  transform-origin: left;
+  animation: grow-bar 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility rise-in {
+  animation: rise-in 0.45s ease-out both;
+}
+
+@utility bn {
+  font-family: var(--font-bn);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    -webkit-font-smoothing: antialiased;
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+}
