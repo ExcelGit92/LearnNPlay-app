@@ -1,7 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -56,13 +55,6 @@ function AuthPage() {
       setMsg("Check your inbox to confirm your email, then sign in.");
   }
 
-  async function google() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/auth`,
-    });
-    if (result.error) setMsg(result.error.message ?? "Google sign-in failed.");
-  }
-
   return (
     <div className="grid min-h-screen place-items-center bg-background px-5">
       <div className="w-full max-w-sm rounded-3xl border border-border bg-surface p-7 shadow-sm">
@@ -79,18 +71,7 @@ function AuthPage() {
           Participants don't need an account — they join with a PIN.
         </p>
 
-        <button
-          onClick={google}
-          className="mt-5 w-full rounded-2xl border border-border bg-background py-3 text-sm font-semibold"
-        >
-          Continue with Google
-        </button>
-        <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="h-px flex-1 bg-border" />
-          or
-          <span className="h-px flex-1 bg-border" />
-        </div>
-        <form onSubmit={submit} className="space-y-3">
+        <form onSubmit={submit} className="mt-5 space-y-3">
           <input
             type="email"
             required

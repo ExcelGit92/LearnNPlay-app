@@ -283,15 +283,13 @@ export function useAuthUser() {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) =>
       setState({ loading: false, userId: s?.user.id ?? null, email: s?.user.email ?? null }),
     );
-    supabase.auth
-      .getSession()
-      .then(({ data }) =>
-        setState({
-          loading: false,
-          userId: data.session?.user.id ?? null,
-          email: data.session?.user.email ?? null,
-        }),
-      );
+    supabase.auth.getSession().then(({ data }) =>
+      setState({
+        loading: false,
+        userId: data.session?.user.id ?? null,
+        email: data.session?.user.email ?? null,
+      }),
+    );
     return () => sub.subscription.unsubscribe();
   }, []);
   return state;
