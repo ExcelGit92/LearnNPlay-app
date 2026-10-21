@@ -50,7 +50,34 @@ export const generateQuizFromFile = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+
+    // Check subscription limits for quiz creation
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: orgMember } = await supabaseAdmin
+      .from("organization_members")
+      .select("org_id")
+      .eq("user_id", userId)
+      .single();
+
+    if (orgMember) {
+      const { canCreateQuiz, canUseAI } = await import("./subscription-limits");
+      const quizCheck = await canCreateQuiz(orgMember.org_id);
+      const aiCheck = await canUseAI(orgMember.org_id);
+
+      if (!quizCheck.allowed) {
+        throw new Error(
+          `You've reached your monthly quiz limit (${quizCheck.limit}). Upgrade your plan to create more quizzes.`,
+        );
+      }
+
+      if (!aiCheck.allowed) {
+        throw new Error(
+          `You've reached your AI generation limit (${aiCheck.limit}). Upgrade your plan for unlimited AI-powered quizzes.`,
+        );
+      }
+    }
+
     const lower = data.fileName.toLowerCase();
     if (lower.endsWith(".ppt"))
       throw new Error(

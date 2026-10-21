@@ -72,14 +72,33 @@ LearnNPlay is an interactive quiz & gamified training platform built with TanSta
 - Customized LearnNPlay SVG favicon
 - App metadata customization
 
+### 11. Unequal-Team Average Scoring
+
+- Team scoring method selector (total/average/accuracy)
+- Balanced scoring for teams with different player counts
+- Admin can choose scoring method per session
+
 ---
 
 ## 🚧 Pending Features / Roadmap
 
-### 1. Unequal-Team Average Scoring
+### 1. Subscription & Monetization System
 
-- **Status**: Pending
-- **Description**: Implement balanced scoring when teams have different player counts to ensure fair competition
+- **Status**: 🔄 In Progress (Foundation Laid)
+- **Description**:
+  - Database schema created (user_roles, subscription_plans, subscriptions)
+  - RLS policies implemented
+  - Initial plans seeded (Starter, Pro Trainer monthly/yearly, Enterprise monthly/yearly)
+  - Admin panel UI created at /admin/plans
+  - Pricing page created at /pricing
+  - Stripe SDK installed
+  - Upgrade button added to dashboard
+  - **Remaining Work**:
+    - Complete Stripe checkout integration
+    - Implement webhook handlers
+    - Enforce subscription limits (participants, quizzes, language)
+    - Add upgrade prompts for free users
+    - Assign admin role to redmi.v1990@gmail.com
 
 ### 2. Live Full-System Simulation
 
@@ -95,11 +114,6 @@ LearnNPlay is an interactive quiz & gamified training platform built with TanSta
   - Deploy to production environment
   - Configure custom domain
   - Ensure production readiness
-
-### 4. Subscription / Payment Integration (Optional)
-
-- **Status**: Future Addition
-- **Description**: Optional feature for monetization (can be added later)
 
 ---
 

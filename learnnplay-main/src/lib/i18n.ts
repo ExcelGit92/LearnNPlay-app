@@ -137,3 +137,42 @@ export function applyGlossary(text: string, lang: LangCode, glossary: GlossaryEn
   }
   return out;
 }
+
+/* --------------------------- subscription language restrictions --------------------------- */
+
+/**
+ * Filter languages based on subscription limits
+ * Free users (no subscription) only get English
+ * Paid users get all languages
+ */
+export function filterLanguagesBySubscription(
+  languages: Language[],
+  hasSubscription: boolean,
+): Language[] {
+  if (hasSubscription) {
+    return languages;
+  }
+  // Free users only get English
+  return languages.filter((lang) => lang.code === "en");
+}
+
+/**
+ * Check if a specific language is allowed based on subscription
+ */
+export function isLanguageAllowedBySubscription(
+  langCode: LangCode,
+  hasSubscription: boolean,
+): boolean {
+  if (hasSubscription) {
+    return true;
+  }
+  // Free users only get English
+  return langCode === "en";
+}
+
+/**
+ * Get a message prompting upgrade for language access
+ */
+export function getLanguageUpgradeMessage(): string {
+  return "Multilingual support is available on paid plans. Upgrade to access all 16 languages.";
+}

@@ -34,12 +34,20 @@ function Dashboard() {
       subtitle="Trainer console"
       title="Welcome back"
       action={
-        <Link
-          to="/create"
-          className="rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-brand transition-colors hover:bg-primary-deep"
-        >
-          New quiz
-        </Link>
+        <div className="flex gap-2">
+          <Link
+            to="/pricing"
+            className="rounded-2xl border-2 border-border px-5 py-3 text-sm font-semibold transition-colors hover:bg-secondary"
+          >
+            Upgrade
+          </Link>
+          <Link
+            to="/create"
+            className="rounded-2xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-brand transition-colors hover:bg-primary-deep"
+          >
+            New quiz
+          </Link>
+        </div>
       }
     >
       <div className="space-y-5">

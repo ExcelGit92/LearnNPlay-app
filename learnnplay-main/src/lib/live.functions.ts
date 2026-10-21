@@ -43,11 +43,27 @@ export const joinLiveSession = createServerFn({ method: "POST" })
     const db = await admin();
     const { data: session } = await db
       .from("live_sessions")
-      .select("id, status, languages, competition_mode, teams, teams_locked, team_settings")
+      .select("id, status, languages, competition_mode, teams, teams_locked, team_settings, org_id")
       .eq("pin", data.pin)
       .neq("status", "ended")
       .maybeSingle();
     if (!session) throw new Error("That PIN doesn't match a live session.");
+
+    // Check subscription limits for participants
+    const { canAddParticipants } = await import("./subscription-limits");
+    const { data: currentParticipants } = await db
+      .from("participants")
+      .select("id")
+      .eq("session_id", session.id);
+    const participantCount = currentParticipants?.length || 0;
+    const limitCheck = await canAddParticipants(session.org_id, participantCount);
+
+    if (!limitCheck.allowed) {
+      throw new Error(
+        `This session has reached the participant limit (${limitCheck.limit}). The host needs to upgrade their plan to allow more participants.`,
+      );
+    }
+
     const cfg = session.languages as { mode: string; primary: string; secondary?: string | null };
     const allowed = [cfg.primary, ...(cfg.mode === "dual" && cfg.secondary ? [cfg.secondary] : [])];
     const lang = data.lang && allowed.includes(data.lang) ? data.lang : cfg.primary;
