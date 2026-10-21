@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Card } from "@/components/AppShell";
 import { Check } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { createCheckoutSession } from "@/lib/stripe.functions";
 
 export const Route = createFileRoute("/pricing")({
   component: PricingPage,
@@ -9,10 +11,12 @@ export const Route = createFileRoute("/pricing")({
 
 function PricingPage() {
   const [billingInterval, setBillingInterval] = useState<"month" | "year">("month");
+  const checkout = useServerFn(createCheckoutSession);
 
   const plans = [
     {
       name: "Starter",
+      slug: "starter",
       price: 0,
       monthlyPrice: 0,
       yearlyPrice: 0,
@@ -28,6 +32,7 @@ function PricingPage() {
     },
     {
       name: "Pro Trainer",
+      slug: billingInterval === "month" ? "pro-trainer-monthly" : "pro-trainer-yearly",
       price: billingInterval === "month" ? 15 : 9,
       monthlyPrice: 15,
       yearlyPrice: 9,
@@ -45,6 +50,7 @@ function PricingPage() {
     },
     {
       name: "Enterprise",
+      slug: billingInterval === "month" ? "enterprise-monthly" : "enterprise-yearly",
       price: billingInterval === "month" ? 49 : 40,
       monthlyPrice: 49,
       yearlyPrice: 40,
@@ -63,6 +69,22 @@ function PricingPage() {
       popular: false,
     },
   ];
+
+  const handleSubscribe = async (slug: string) => {
+    if (slug === "starter") {
+      window.location.href = "/dashboard";
+      return;
+    }
+    try {
+      const result = await checkout({ data: { planSlug: slug } });
+      if (result.url) {
+        window.location.href = result.url;
+      }
+    } catch (error) {
+      console.error("Checkout failed:", error);
+      alert("Failed to start checkout. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -98,7 +120,7 @@ function PricingPage() {
         <div className="grid gap-8 md:grid-cols-3">
           {plans.map((plan) => (
             <Card
-              key={plan.name}
+              key={plan.slug}
               className={`relative p-8 ${plan.popular ? "border-2 border-primary" : ""}`}
             >
               {plan.popular && (
@@ -120,6 +142,7 @@ function PricingPage() {
                 ))}
               </ul>
               <button
+                onClick={() => handleSubscribe(plan.slug)}
                 className={`mt-8 w-full rounded-xl py-3 font-semibold ${
                   plan.popular ? "bg-primary text-primary-foreground" : "border-2 border-border"
                 }`}

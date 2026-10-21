@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { gami, questionBasePoints, smallestTeam, type Team, type TeamSettings } from "./teams";
+import { canJoinSession, canUseLanguage, getOrgPlan } from "./subscription-limits";
+import { FREE_PLAN_LIMITS } from "./subscriptions";
 
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -50,23 +52,31 @@ export const joinLiveSession = createServerFn({ method: "POST" })
     if (!session) throw new Error("That PIN doesn't match a live session.");
 
     // Check subscription limits for participants
-    const { canAddParticipants } = await import("./subscription-limits");
     const { data: currentParticipants } = await db
       .from("participants")
       .select("id")
       .eq("session_id", session.id);
     const participantCount = currentParticipants?.length || 0;
-    const limitCheck = await canAddParticipants(session.org_id, participantCount);
+    const plan = await getOrgPlan(session.org_id);
 
-    if (!limitCheck.allowed) {
+    if (!canJoinSession(participantCount + 1, plan)) {
+      const limit = plan?.max_participants || FREE_PLAN_LIMITS.max_participants;
       throw new Error(
-        `This session has reached the participant limit (${limitCheck.limit}). The host needs to upgrade their plan to allow more participants.`,
+        `This session has reached the participant limit (${limit}). Upgrade to Pro Trainer for more participants.`,
       );
     }
 
     const cfg = session.languages as { mode: string; primary: string; secondary?: string | null };
     const allowed = [cfg.primary, ...(cfg.mode === "dual" && cfg.secondary ? [cfg.secondary] : [])];
     const lang = data.lang && allowed.includes(data.lang) ? data.lang : cfg.primary;
+
+    // Check language restriction for free users
+    if (!canUseLanguage(lang, plan)) {
+      throw new Error(
+        "English only is available on the Starter plan. Upgrade to Pro Trainer to access all 16 languages.",
+      );
+    }
+
     let team: string | null = null;
     const teams = (session.teams as Team[]) ?? [];
     if (session.competition_mode !== "individual" && teams.length) {

@@ -2,9 +2,18 @@ import type { SubscriptionPlan, Subscription } from "./subscriptions";
 import { FREE_PLAN_LIMITS } from "./subscriptions";
 
 export async function getOrgSubscription(orgId: string): Promise<Subscription | null> {
-  // This would fetch from database
-  // For now, return null (free plan)
-  return null;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin
+      .from("subscriptions")
+      .select("*, subscription_plans(*)")
+      .eq("org_id", orgId)
+      .eq("status", "active")
+      .single();
+    return data as Subscription | null;
+  } catch {
+    return null;
+  }
 }
 
 export async function getOrgPlan(orgId: string): Promise<SubscriptionPlan | null> {
