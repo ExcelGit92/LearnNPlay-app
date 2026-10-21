@@ -1,6 +1,7 @@
+import React from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useSession } from "@/integrations/supabase/auth-middleware";
+import { supabase } from "@/integrations/supabase/client";
 import { assignAdminRole } from "@/lib/admin-functions";
 
 export const Route = createFileRoute("/_authenticated/setup-admin")({
@@ -9,8 +10,12 @@ export const Route = createFileRoute("/_authenticated/setup-admin")({
 
 function SetupAdminPage() {
   const navigate = useNavigate();
-  const { data: session } = useSession();
   const assignRole = useServerFn(assignAdminRole);
+  const [session, setSession] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+  }, []);
 
   const handleAssignAdmin = async () => {
     if (!session?.user?.email) {

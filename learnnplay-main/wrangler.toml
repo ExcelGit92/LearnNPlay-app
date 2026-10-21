@@ -1,0 +1,9 @@
+name = "learnnplay"
+main = "start.ts"
+compatibility_date = "2024-01-01"
+
+[vars]
+VITE_SUPABASE_PROJECT_ID = "yekrlxpvsqhgswwmmcew"
+VITE_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlla3JseHB2c3FoZ3N3d21tY2V3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1NDEwNjQsImV4cCI6MjEwODExNzA2NH0.jXjwn0brLyCkNj6OCtVICjoJnObJOAr_AZxu4CCIwgU"
+VITE_SUPABASE_URL = "https://yekrlxpvsqhgswwmmcew.supabase.co"
+
