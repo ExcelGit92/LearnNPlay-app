@@ -1,12 +1,14 @@
 name = "learnnplay"
 compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+main = ".output/server/index.mjs"
 
 [vars]
 VITE_SUPABASE_PROJECT_ID = "smrzscdsuovxgqqwxcbw"
 VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_34iUhHtR4Fbeg_2mXDIqhQ_BSJtXVSz"
 VITE_SUPABASE_URL = "https://smrzscdsuovxgqqwxcbw.supabase.co"
 
-[build]
-command = "npm run build"
-cwd = "."
+[assets]
+directory = ".output/public"
+binding = "ASSETS"
 
