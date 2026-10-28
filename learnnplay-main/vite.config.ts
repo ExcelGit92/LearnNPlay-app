@@ -11,11 +11,10 @@ export default defineConfig({
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
-  },
-  vite: {
-    define: {
-      'process.env.SUPABASE_URL': JSON.stringify(process.env.SUPABASE_URL),
-      'process.env.SUPABASE_PUBLISHABLE_KEY': JSON.stringify(process.env.SUPABASE_PUBLISHABLE_KEY),
+    serverEnv: {
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     },
   },
 });
