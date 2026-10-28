@@ -7,6 +7,8 @@ main = ".output/server/index.mjs"
 VITE_SUPABASE_PROJECT_ID = "yekrlxpvsqhgswwmmcew"
 VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_U_3vuqu5il6XmTJ8zCpLQw_RiOcGDhv"
 VITE_SUPABASE_URL = "https://yekrlxpvsqhgswwmmcew.supabase.co"
+SUPABASE_URL = "https://yekrlxpvsqhgswwmmcew.supabase.co"
+SUPABASE_PUBLISHABLE_KEY = "sb_publishable_U_3vuqu5il6XmTJ8zCpLQw_RiOcGDhv"
 
 [assets]
 directory = ".output/public"
