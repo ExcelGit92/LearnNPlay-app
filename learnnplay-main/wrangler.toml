@@ -4,9 +4,9 @@ compatibility_flags = ["nodejs_compat"]
 main = ".output/server/index.mjs"
 
 [vars]
-VITE_SUPABASE_PROJECT_ID = "smrzscdsuovxgqqwxcbw"
-VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_34iUhHtR4Fbeg_2mXDIqhQ_BSJtXVSz"
-VITE_SUPABASE_URL = "https://smrzscdsuovxgqqwxcbw.supabase.co"
+VITE_SUPABASE_PROJECT_ID = "yekrlxpvsqhgswwmmcew"
+VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_U_3vuqu5il6XmTJ8zCpLQw_RiOcGDhv"
+VITE_SUPABASE_URL = "https://yekrlxpvsqhgswwmmcew.supabase.co"
 
 [assets]
 directory = ".output/public"

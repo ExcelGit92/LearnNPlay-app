@@ -14,13 +14,15 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as PlayRouteImport } from './routes/play'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as AuthenticatedAnalyticsRouteImport } from './routes/_authenticated/analytics'
 import { Route as AuthenticatedCreateRouteImport } from './routes/_authenticated/create'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedHostRouteImport } from './routes/_authenticated/host'
 import { Route as AuthenticatedLibraryRouteImport } from './routes/_authenticated/library'
+import { Route as AuthenticatedSetupAdminRouteImport } from './routes/_authenticated/setup-admin'
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
-import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
+import { Route as AdminPlansRouteImport } from './routes/admin/plans'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -44,6 +46,11 @@ const JoinRoute = JoinRouteImport.update({
 const PlayRoute = PlayRouteImport.update({
   id: '/play',
   path: '/play',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAnalyticsRoute = AuthenticatedAnalyticsRouteImport.update({
@@ -71,14 +78,19 @@ const AuthenticatedLibraryRoute = AuthenticatedLibraryRouteImport.update({
   path: '/library',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSetupAdminRoute = AuthenticatedSetupAdminRouteImport.update({
+  id: '/setup-admin',
+  path: '/setup-admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTemplatesRoute = AuthenticatedTemplatesRouteImport.update({
   id: '/templates',
   path: '/templates',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
-  id: '/api/webhooks/stripe',
-  path: '/api/webhooks/stripe',
+const AdminPlansRoute = AdminPlansRouteImport.update({
+  id: '/admin/plans',
+  path: '/admin/plans',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -87,26 +99,30 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/join': typeof JoinRoute
   '/play': typeof PlayRoute
+  '/pricing': typeof PricingRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/create': typeof AuthenticatedCreateRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/host': typeof AuthenticatedHostRoute
   '/library': typeof AuthenticatedLibraryRoute
+  '/setup-admin': typeof AuthenticatedSetupAdminRoute
   '/templates': typeof AuthenticatedTemplatesRoute
-  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/admin/plans': typeof AdminPlansRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/join': typeof JoinRoute
   '/play': typeof PlayRoute
+  '/pricing': typeof PricingRoute
   '/analytics': typeof AuthenticatedAnalyticsRoute
   '/create': typeof AuthenticatedCreateRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/host': typeof AuthenticatedHostRoute
   '/library': typeof AuthenticatedLibraryRoute
+  '/setup-admin': typeof AuthenticatedSetupAdminRoute
   '/templates': typeof AuthenticatedTemplatesRoute
-  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/admin/plans': typeof AdminPlansRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,13 +131,15 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/join': typeof JoinRoute
   '/play': typeof PlayRoute
+  '/pricing': typeof PricingRoute
   '/_authenticated/analytics': typeof AuthenticatedAnalyticsRoute
   '/_authenticated/create': typeof AuthenticatedCreateRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/host': typeof AuthenticatedHostRoute
   '/_authenticated/library': typeof AuthenticatedLibraryRoute
+  '/_authenticated/setup-admin': typeof AuthenticatedSetupAdminRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRoute
-  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/admin/plans': typeof AdminPlansRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -130,26 +148,30 @@ export interface FileRouteTypes {
     | '/auth'
     | '/join'
     | '/play'
+    | '/pricing'
     | '/analytics'
     | '/create'
     | '/dashboard'
     | '/host'
     | '/library'
+    | '/setup-admin'
     | '/templates'
-    | '/api/webhooks/stripe'
+    | '/admin/plans'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/join'
     | '/play'
+    | '/pricing'
     | '/analytics'
     | '/create'
     | '/dashboard'
     | '/host'
     | '/library'
+    | '/setup-admin'
     | '/templates'
-    | '/api/webhooks/stripe'
+    | '/admin/plans'
   id:
     | '__root__'
     | '/'
@@ -157,13 +179,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/join'
     | '/play'
+    | '/pricing'
     | '/_authenticated/analytics'
     | '/_authenticated/create'
     | '/_authenticated/dashboard'
     | '/_authenticated/host'
     | '/_authenticated/library'
+    | '/_authenticated/setup-admin'
     | '/_authenticated/templates'
-    | '/api/webhooks/stripe'
+    | '/admin/plans'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -172,7 +196,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   JoinRoute: typeof JoinRoute
   PlayRoute: typeof PlayRoute
-  ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
+  PricingRoute: typeof PricingRoute
+  AdminPlansRoute: typeof AdminPlansRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/analytics': {
       id: '/_authenticated/analytics'
       path: '/analytics'
@@ -247,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLibraryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/setup-admin': {
+      id: '/_authenticated/setup-admin'
+      path: '/setup-admin'
+      fullPath: '/setup-admin'
+      preLoaderRoute: typeof AuthenticatedSetupAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/templates': {
       id: '/_authenticated/templates'
       path: '/templates'
@@ -254,11 +293,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTemplatesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/webhooks/stripe': {
-      id: '/api/webhooks/stripe'
-      path: '/api/webhooks/stripe'
-      fullPath: '/api/webhooks/stripe'
-      preLoaderRoute: typeof ApiWebhooksStripeRouteImport
+    '/admin/plans': {
+      id: '/admin/plans'
+      path: '/admin/plans'
+      fullPath: '/admin/plans'
+      preLoaderRoute: typeof AdminPlansRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -270,6 +309,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedHostRoute: typeof AuthenticatedHostRoute
   AuthenticatedLibraryRoute: typeof AuthenticatedLibraryRoute
+  AuthenticatedSetupAdminRoute: typeof AuthenticatedSetupAdminRoute
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRoute
 }
 
@@ -279,6 +319,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedHostRoute: AuthenticatedHostRoute,
   AuthenticatedLibraryRoute: AuthenticatedLibraryRoute,
+  AuthenticatedSetupAdminRoute: AuthenticatedSetupAdminRoute,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRoute,
 }
 
@@ -291,7 +332,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   JoinRoute: JoinRoute,
   PlayRoute: PlayRoute,
-  ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
+  PricingRoute: PricingRoute,
+  AdminPlansRoute: AdminPlansRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
