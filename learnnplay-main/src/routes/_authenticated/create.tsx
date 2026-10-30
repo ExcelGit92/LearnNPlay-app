@@ -111,7 +111,7 @@ function CreatePage() {
       return setError("Old .ppt files can't be read. Please save the deck as .pptx or PDF.");
     if (!lower.endsWith(".pptx") && !lower.endsWith(".pdf"))
       return setError("Please choose a .pptx or .pdf file.");
-    if (file.size > 50 * 1024 * 1024) return setError("That file is over 50 MB.");
+    if (file.size > 5 * 1024 * 1024) return setError("File is too large! Please upload a file under 5MB. Tip: You can compress your PPT or convert it into a PDF to make the file size smaller.");
     if (!orgId) return setError("Your workspace is still loading — try again in a moment.");
     setFileName(file.name);
     setStatus("reading");
