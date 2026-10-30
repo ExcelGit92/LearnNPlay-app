@@ -4,11 +4,11 @@ compatibility_flags = ["nodejs_compat"]
 main = ".output/server/index.mjs"
 
 [vars]
-VITE_SUPABASE_PROJECT_ID = "yekrlxpvsqhgswwmmcew"
-VITE_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_U_3vuqu5il6XmTJ8zCpLQw_RiOcGDhv"
-VITE_SUPABASE_URL = "https://yekrlxpvsqhgswwmmcew.supabase.co"
-SUPABASE_URL = "https://yekrlxpvsqhgswwmmcew.supabase.co"
-SUPABASE_PUBLISHABLE_KEY = "sb_publishable_U_3vuqu5il6XmTJ8zCpLQw_RiOcGDhv"
+VITE_SUPABASE_PROJECT_ID = "llpcguyflkdttdpegovk"
+VITE_SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxscGNndXlmbGtkdHRkcGVnb3ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMjIwMDcsImV4cCI6MjEwODg5ODAwN30.GQL6kZxkLw455FP7UdHKY7i7efxx6NEFuOwJiUl4wQ4"
+VITE_SUPABASE_URL = "https://llpcguyflkdttdpegovk.supabase.co"
+SUPABASE_URL = "https://llpcguyflkdttdpegovk.supabase.co"
+SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxscGNndXlmbGtkdHRkcGVnb3ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMjIwMDcsImV4cCI6MjEwODg5ODAwN30.GQL6kZxkLw455FP7UdHKY7i7efxx6NEFuOwJiUl4wQ4"
 
 [assets]
 directory = ".output/public"
