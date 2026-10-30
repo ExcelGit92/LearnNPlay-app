@@ -12,8 +12,8 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
     serverEnv: {
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY,
+      SUPABASE_URL: "https://llpcguyflkdttdpegovk.supabase.co",
+      SUPABASE_PUBLISHABLE_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxscGNndXlmbGtkdHRkcGVnb3ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzMjIwMDcsImV4cCI6MjEwODg5ODAwN30.GQL6kZxkLw455FP7UdHKY7i7efxx6NEFuOwJiUl4wQ4",
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     },
   },
